@@ -1,0 +1,28 @@
+.layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--color-background);
+}
+
+.layout-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.layout-content-wrapper {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.layout-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 32px;
+  background-color: #16181d;
+  height: calc(100vh - 64px);
+}
+

@@ -1,0 +1,110 @@
+.top-nav {
+  height: 64px;
+  background-color: #0d0f14;
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.top-nav-logo {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+  letter-spacing: -0.3px;
+  flex-shrink: 0;
+}
+
+.top-nav-content {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex: 1;
+}
+
+.top-nav-item {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 14px;
+  height: 44px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.top-nav-item:hover {
+  color: var(--color-text);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.top-nav-item.active {
+  color: var(--color-text);
+  font-weight: 500;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 마켓 상태 표시 - 차분한 Badge 스타일 */
+.top-nav-market-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  margin-left: 20px;
+  border: 1px solid transparent;
+}
+
+.top-nav-market-status.open {
+  background-color: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.top-nav-market-status.closed {
+  background-color: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.top-nav-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.top-nav-market-status.open .top-nav-status-dot {
+  background-color: #10b981;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.top-nav-market-status.closed .top-nav-status-dot {
+  background-color: #ef4444;
+}
+
+.top-nav-status-text {
+  white-space: nowrap;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+

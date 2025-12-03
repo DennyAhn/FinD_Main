@@ -1,0 +1,869 @@
+/* Widget Container Styles */
+.widget-card {
+    background-color: #1e2127;
+    border: 1px solid var(--color-border, #2d3139);
+    border-radius: 8px;
+    padding: 16px;
+    width: 100%;
+    /* max-width: 240px; Removed to allow full width in grid */
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.widget-label {
+    font-size: 12px;
+    color: var(--color-text-secondary, #9ca3af);
+    margin-bottom: 4px;
+}
+
+.widget-value-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.widget-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text, #ffffff);
+}
+
+.widget-change {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.widget-change.positive {
+    color: #4ade80;
+}
+
+.widget-change.negative {
+    color: #f87171;
+}
+
+.widget-change.neutral {
+    color: #9ca3af;
+}
+
+.widget-chart-container {
+    height: 40px;
+    width: 100%;
+}
+
+/* Donut Chart Specifics */
+.donut-chart-container {
+    height: 120px;
+    width: 100%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.donut-center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+}
+
+.donut-legend {
+    width: 100%;
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.donut-legend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+}
+
+.donut-legend-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-text-secondary, #9ca3af);
+}
+
+.donut-legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+/* Markdown Widget */
+.markdown-widget {
+    background-color: #1e2127;
+    border: 1px solid var(--color-border, #2d3139);
+    border-radius: 8px;
+    padding: 16px;
+    width: 100%;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--color-text, #ffffff);
+}
+
+.markdown-widget h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--color-text, #ffffff);
+}
+
+.markdown-widget ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin: 0;
+}
+
+.markdown-widget li {
+    margin-bottom: 4px;
+}
+
+/* Comprehensive Valuation Card */
+.comp-val-card {
+    background-color: #1e2127;
+    border: 1px solid var(--color-border, #2d3139);
+    border-radius: 12px;
+    padding: 0;
+    width: 100%;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.comp-val-header {
+    padding: 16px 16px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.comp-val-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.comp-val-ticker {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-text, #ffffff);
+}
+
+.comp-val-badge {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-secondary, #9ca3af);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.comp-val-price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comp-val-label {
+    font-size: 12px;
+    color: var(--color-text-secondary, #9ca3af);
+}
+
+.comp-val-body {
+    display: flex;
+    padding: 16px;
+    gap: 16px;
+    align-items: center;
+}
+
+.comp-val-gauge-section {
+    flex: 0 0 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.comp-val-gauge-container {
+    width: 80px;
+    height: 50px;
+    position: relative;
+}
+
+.comp-val-gauge-text {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    line-height: 1;
+}
+
+.comp-val-score {
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.comp-val-status {
+    font-size: 10px;
+    font-weight: 600;
+    margin-top: 4px;
+    color: var(--color-text-secondary, #9ca3af);
+}
+
+.comp-val-summary-section {
+    flex: 1;
+}
+
+.comp-val-summary-text {
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--color-text, #ffffff);
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.comp-val-footer {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.comp-val-metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+}
+
+.comp-val-metric-label {
+    color: var(--color-text-secondary, #9ca3af);
+}
+
+.comp-val-metric-right {
+    text-align: right;
+}
+
+.comp-val-metric-value {
+    color: var(--color-text, #ffffff);
+    font-weight: 600;
+}
+
+.comp-val-metric-comparison {
+    font-size: 10px;
+    color: var(--color-text-secondary, #6b7280);
+    margin-top: 1px;
+}
+
+/* Metric Item Card (for MetricsGrid) */
+.metrics-grid-layout {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+@media (max-width: 980px) {
+    .metrics-grid-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.metric-item-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 20px;
+    background-color: #111827;
+    border-radius: 12px;
+    border: 1px solid rgba(59, 130, 246, 0.08);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+    transition: transform 0.25s ease, border-color 0.25s ease;
+    cursor: default;
+    min-height: 170px;
+}
+
+.metric-item-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(59, 130, 246, 0.5);
+}
+
+.metric-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.metric-label-text {
+    font-size: 13px;
+    color: #94a3b8;
+    letter-spacing: 0.02em;
+}
+
+.metric-value-text {
+    font-size: 28px;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+.metric-subtext {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+/* Analyst Card */
+.analyst-card-container {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+    padding: 20px;
+}
+
+.analyst-gauge-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+}
+
+.analyst-gauge-chart {
+    width: 160px;
+    height: 110px;
+    position: relative;
+}
+
+.analyst-gauge-value {
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.analyst-gauge-label {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.analyst-gauge-subtext {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.analyst-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.analyst-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+    margin-bottom: 8px;
+}
+
+.analyst-upside-value {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.analyst-upside-value > span:first-child {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.analyst-upside-value .positive {
+    color: #60a5fa;
+}
+
+.analyst-upside-value .negative {
+    color: #f87171;
+}
+
+.analyst-upside-target {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.analyst-progress-track {
+    height: 8px;
+    background-color: #334155;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.analyst-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #334155, #60a5fa);
+    border-radius: 999px;
+}
+
+.analyst-progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+.analyst-distribution-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.analyst-distribution-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 32px;
+    align-items: center;
+    font-size: 12px;
+    color: #cbd5f5;
+    gap: 8px;
+}
+
+.analyst-distribution-track {
+    height: 6px;
+    background-color: #1f2937;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.analyst-distribution-fill {
+    height: 100%;
+    border-radius: 999px;
+}
+
+@media (max-width: 1200px) {
+    .analyst-card-container {
+        grid-template-columns: 1fr;
+    }
+
+    .analyst-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .analyst-gauge-chart {
+        width: 200px;
+    }
+}
+
+/* Financial Statements View */
+.financial-statements-view {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.financial-statements-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+}
+
+.financial-statements-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--color-border, #2d3139);
+    margin-bottom: 8px;
+    flex: 1;
+}
+
+.financial-statements-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.financial-statements-period-selector {
+    display: flex;
+    gap: 0;
+    background-color: var(--color-surface, #1e2127);
+    border: 1px solid var(--color-border, #2d3139);
+    border-radius: 8px;
+    padding: 2px;
+}
+
+.period-btn {
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary, #9ca3af);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.period-btn:hover {
+    color: var(--color-text, #ffffff);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.period-btn.active {
+    color: var(--color-text, #ffffff);
+    background-color: var(--color-primary, #3b82f6);
+}
+
+.financial-statements-year-range-selector {
+    display: flex;
+    gap: 0;
+    background-color: var(--color-surface, #1e2127);
+    border: 1px solid var(--color-border, #2d3139);
+    border-radius: 8px;
+    padding: 2px;
+}
+
+.year-range-btn {
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary, #9ca3af);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.year-range-btn:hover {
+    color: var(--color-text, #ffffff);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.year-range-btn.active {
+    color: var(--color-text, #ffffff);
+    background-color: var(--color-primary, #3b82f6);
+}
+
+.financial-statements-tab {
+    background: none;
+    border: none;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-text-secondary, #9ca3af);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+}
+
+.financial-statements-tab:hover {
+    color: var(--color-text, #ffffff);
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+.financial-statements-tab.active {
+    color: var(--color-text, #ffffff);
+    border-bottom-color: var(--color-primary, #3b82f6);
+}
+
+.financial-statements-widgets {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 인사이트와 차트를 2컬럼으로 배치하는 래퍼 */
+.financial-insight-chart-wrapper {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.financial-insight-chart-wrapper.chart-only {
+    grid-template-columns: 1fr;
+}
+
+@media (max-width: 1200px) {
+    .financial-insight-chart-wrapper {
+        grid-template-columns: 1fr;
+    }
+    
+    .financial-insight-chart-wrapper.chart-only {
+        grid-template-columns: 1fr;
+    }
+}
+
+.financial-statements-loading,
+.financial-statements-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: var(--color-text-secondary, #9ca3af);
+}
+
+/* Insight Card - 현업 스타일 컴팩트 디자인 */
+.insight-card {
+    background-color: var(--color-surface, #1e2127);
+    border: 1px solid var(--color-border, #2d3139);
+    border-radius: 8px;
+    padding: 18px 20px;
+}
+
+.insight-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text, #ffffff);
+    margin: 0 0 14px 0;
+}
+
+.insight-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.insight-highlights {
+    display: none;
+}
+
+.insight-metrics {
+    display: flex;
+    flex-direction: row;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.insight-metric-badge {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    min-width: 100px;
+    flex: 1;
+    max-width: 140px;
+    cursor: help;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.insight-metric-badge:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 말풍선 툴팁 */
+.insight-metric-tooltip {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    max-width: 280px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background-color: rgba(15, 23, 42, 0.96);
+    border: 1px solid rgba(148, 163, 184, 0.45);
+    color: var(--color-text-secondary, #e5e7eb);
+    font-size: 12px;
+    line-height: 1.5;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 20;
+    white-space: normal;
+}
+
+/* 작은 삼각형 꼬리 */
+.insight-metric-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 12px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: rgba(15, 23, 42, 0.96) transparent transparent transparent;
+}
+
+/* 호버 시 툴팁 보이기 */
+.insight-metric-badge:hover .insight-metric-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.insight-metric-label {
+    font-size: 12px;
+    color: var(--color-text-secondary, #9ca3af);
+    font-weight: 500;
+}
+
+.insight-metric-value {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.insight-metric-value.good {
+    color: #34d399;
+}
+
+.insight-metric-value.bad {
+    color: #f87171;
+}
+
+.insight-metric-value.neutral {
+    color: var(--color-text, #ffffff);
+}
+
+/* Financial Chart Widget */
+.financial-chart-widget {
+    background-color: var(--color-surface, #1e2127);
+    border: 1px solid var(--color-border, #2d3139);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+/* Financial Table */
+.financial-table-container {
+    background-color: var(--color-surface, #1e2127);
+    border: 1px solid var(--color-border, #2d3139);
+    border-radius: 8px;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.financial-table-scroll {
+    overflow-x: auto;
+}
+
+.financial-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.financial-table-header {
+    text-align: right;
+    padding: 12px 16px;
+    font-weight: 600;
+    color: var(--color-text-secondary, #9ca3af);
+    border-bottom: 1px solid var(--color-border, #2d3139);
+    white-space: nowrap;
+}
+
+.financial-table-header.pin-left {
+    position: sticky;
+    left: 0;
+    background-color: var(--color-surface, #1e2127);
+    z-index: 10;
+}
+
+.financial-table-label-cell {
+    text-align: left;
+    padding: 12px 16px;
+    font-weight: 500;
+    color: var(--color-text, #ffffff);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    position: sticky;
+    left: 0;
+    background-color: var(--color-surface, #1e2127);
+    z-index: 5;
+}
+
+.financial-table-value-cell {
+    text-align: right;
+    padding: 12px 16px;
+    color: var(--color-text-secondary, #9ca3af);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    white-space: nowrap;
+}
+
+.financial-table-currency-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.financial-table-currency-cell .currency-usd {
+    font-size: 13px;
+    color: var(--color-text-secondary, #9ca3af);
+}
+
+.financial-table-currency-cell .currency-krw {
+    font-size: 11px;
+    color: var(--color-text-secondary, #6b7280);
+    opacity: 0.7;
+}
+
+.financial-table-row.level-0 {
+    background-color: transparent;
+}
+
+.financial-table-row.level-1 {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.financial-table-expand-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-secondary, #9ca3af);
+    cursor: pointer;
+    padding: 0 4px;
+    font-size: 10px;
+    margin-right: 4px;
+    transition: color 0.2s;
+}
+
+.financial-table-expand-btn:hover {
+    color: var(--color-text, #ffffff);
+}
+
+@media (max-width: 768px) {
+    .insight-card {
+        padding: 14px 16px;
+    }
+    
+    .insight-card-title {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    
+    .insight-highlight-text {
+        font-size: 12px;
+    }
+    
+    .insight-metrics {
+        flex-direction: column;
+    }
+    
+    .insight-metric-badge {
+        max-width: 100%;
+    }
+    
+    .financial-insight-chart-wrapper {
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+    }
+}

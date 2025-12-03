@@ -1,0 +1,40 @@
+.advanced-chart-container {
+  position: relative;
+  width: 100%;
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.chart-controls {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chart-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  color: #d1d4dc;
+  font-size: 14px;
+}
+
+.chart-main {
+  width: 100%;
+  border: 1px solid #2a2a2a;
+  background-color: #1a1a1a;
+  border-radius: 4px;
+}
+
+.chart-volume {
+  width: 100%;
+  border: 1px solid #2a2a2a;
+  border-top: none;
+  background-color: #1a1a1a;
+  border-radius: 0 0 4px 4px;
+}

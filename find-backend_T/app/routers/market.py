@@ -1,0 +1,49 @@
+# app/routers/market.py (Tool 분리 버전)
+
+import httpx
+from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy.orm import Session
+
+from app.database import SessionLocal
+from app.services.market_service import fetch_stock_quote
+
+router = APIRouter(
+    prefix="/api/v1/market",
+    tags=["Market"]
+)
+
+def get_httpx_client(request: Request) -> httpx.AsyncClient:
+    return request.app.state.httpx_client
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# --- 기존의 테스트용 엔드포인트 (이제 위 "도구"를 사용하도록 변경) ---
+@router.get("/quote/{ticker}")
+async def get_market_quote_test(
+    ticker: str,
+    client: httpx.AsyncClient = Depends(get_httpx_client),
+    db: Session = Depends(get_db)
+):
+    """
+    개발 테스트용: fetch_stock_quote 도구가 잘 작동하는지 테스트합니다.
+    """
+    quote_data = await fetch_stock_quote(ticker, db, client)
+    if not quote_data:
+        raise HTTPException(
+            status_code=404,
+            detail="Twelve Data에서 정보를 가져오는데 실패했습니다."
+        )
+
+    return {
+        "symbol": quote_data.get("symbol"),
+        "name": quote_data.get("name"),
+        "exchange": quote_data.get("exchange"),
+        "close": quote_data.get("close"),
+        "change": quote_data.get("change"),
+        "percent_change": quote_data.get("percent_change"),
+    }

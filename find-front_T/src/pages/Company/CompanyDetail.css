@@ -1,0 +1,1093 @@
+.company-detail {
+  max-width: 100%;
+  margin: 0;
+  background-color: #16181d;
+  min-height: 100vh;
+}
+
+.chart-tab-content {
+  padding: 20px 0;
+}
+
+.company-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: var(--color-text-secondary);
+  font-size: 16px;
+}
+
+.company-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.company-header-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* 로고 (깔끔하게 - wrapper 제거) */
+.company-logo-clean {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* 현대적 기업 정보 */
+.company-info-modern {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+}
+
+/* 제목 행 (한 줄에 이름 + 티커) */
+.company-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.company-name-primary {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* 티커 뱃지 */
+.company-ticker-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background-color: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #60a5fa;
+  letter-spacing: 0.5px;
+  line-height: 1;
+}
+
+/* 메타 정보 행 (영문명 · NASDAQ) */
+.company-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.company-name-secondary {
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.meta-divider {
+  color: var(--color-border);
+  font-weight: 300;
+}
+
+.company-exchange {
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  opacity: 0.8;
+}
+
+/* 오른쪽 영역 (가격 + 북마크) */
+.company-header-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.company-price-info {
+  text-align: right;
+}
+
+.company-price {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 8px;
+  line-height: 1.1;
+}
+
+.company-change {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.company-change.positive {
+  color: var(--color-success);
+}
+
+.company-change.negative {
+  color: var(--color-danger);
+}
+
+/* 북마크 버튼 */
+.company-favorite {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 8px;
+  color: var(--color-text-secondary);
+  transition: all 0.2s;
+  border-radius: 8px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.company-favorite:hover {
+  color: #fbbf24;
+  background-color: rgba(251, 191, 36, 0.1);
+  transform: scale(1.1);
+}
+
+.company-favorite:active {
+  transform: scale(0.95);
+}
+
+.company-sub-nav {
+  display: flex;
+  gap: 28px;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.company-sub-nav-item {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  padding: 6px 0;
+  transition: color 0.2s;
+  position: relative;
+}
+
+.company-sub-nav-item:hover {
+  color: var(--color-text);
+}
+
+.company-sub-nav-item.active {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.company-sub-nav-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -16px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--color-text);
+}
+
+.company-content {
+  max-width: 100%;
+}
+
+.company-section {
+  margin-bottom: 40px;
+}
+
+.company-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--color-text);
+}
+
+.ai-insight-content {
+  background-color: #1e2127;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  padding: 20px;
+  min-height: 180px;
+}
+
+.insight-summary {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.insight-metrics {
+  display: flex;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.insight-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.metric-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.company-description {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.metric-card {
+  background: #1e2127;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+}
+
+.metric-date {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+.metric-card p {
+  color: var(--color-text);
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.ratings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rating-card {
+  background: #1e2127;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+}
+
+.rating-date {
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--color-text);
+}
+
+.rating-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.rating-bar {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: white;
+  min-width: 60px;
+}
+
+.rating-bar.strong-buy {
+  background-color: var(--color-success);
+}
+
+.rating-bar.buy {
+  background-color: #34d399;
+}
+
+.rating-bar.hold {
+  background-color: var(--color-warning);
+}
+
+.rating-bar.sell {
+  background-color: #f87171;
+}
+
+.rating-bar.strong-sell {
+  background-color: var(--color-danger);
+}
+
+.price-target {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-top: 8px;
+}
+
+/* 검색 섹션 스타일 */
+.company-search-section {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.company-search-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.company-search-input {
+  flex: 1;
+  padding: 14px 18px;
+  background: #1e2127;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 15px;
+  color: var(--color-text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.company-search-input:focus {
+  border-color: #3d4149;
+}
+
+.company-search-input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.company-search-button {
+  padding: 14px 32px;
+  background-color: #2d3139;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.company-search-button:hover:not(:disabled) {
+  background-color: #3d4149;
+  border-color: #3d4149;
+}
+
+.company-search-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.company-search-results {
+  margin-bottom: 32px;
+}
+
+.company-search-results-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--color-text);
+}
+
+/* 검색 결과 없음 */
+.search-no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--color-text-secondary);
+}
+
+.no-results-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.no-results-text {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.no-results-hint {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.company-dashboard-section {
+  margin-top: 32px;
+}
+
+.company-dashboard-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--color-text);
+}
+
+/* 마켓 상태 표시 */
+.market-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.market-status.open {
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #10b981;
+}
+
+.market-status.closed {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.market-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.market-status.open .market-status-dot {
+  background-color: #10b981;
+}
+
+.market-status.closed .market-status-dot {
+  background-color: #ef4444;
+  animation: none;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ==================== Phase 1: 새로운 디자인 스타일 ==================== */
+
+/* 탭 네비게이션 (증권사 스타일) */
+.company-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 32px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.company-tab-item {
+  background: none;
+  border: none;
+  padding: 16px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+
+.company-tab-item:hover {
+  color: var(--color-text);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.company-tab-item.active {
+  color: var(--color-text);
+  border-bottom-color: var(--color-primary, #3b82f6);
+}
+
+/* Hero Section - 재무 건전성 분석 */
+.hero-section {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 32px;
+  margin: 24px 0 32px;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+}
+
+.health-score-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.health-score-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.health-score-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+  border: 3px solid rgba(59, 130, 246, 0.3);
+  margin-bottom: 32px;
+}
+
+.score-number {
+  font-size: 64px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1;
+}
+
+.score-max {
+  font-size: 20px;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+}
+
+.health-bars {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.health-bar-item {
+  width: 100%;
+}
+
+.bar-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.bar-score {
+  color: var(--color-text-secondary);
+}
+
+.bar-track {
+  width: 100%;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.bar-fill.profitability {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.bar-fill.growth {
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+}
+
+.bar-fill.stability {
+  background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+}
+
+.health-disclaimer {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin-top: 16px;
+  line-height: 1.5;
+}
+
+.company-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.overview-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.chart-placeholder {
+  padding: 60px 20px;
+  color: #10b981;
+}
+
+.market-status.closed {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.market-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.market-status.open .market-status-dot {
+  background-color: #10b981;
+}
+
+.market-status.closed .market-status-dot {
+  background-color: #ef4444;
+  animation: none;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ==================== Phase 1: 새로운 디자인 스타일 ==================== */
+
+/* 탭 네비게이션 (증권사 스타일) */
+.company-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 32px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.company-tab-item {
+  background: none;
+  border: none;
+  padding: 16px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+
+.company-tab-item:hover {
+  color: var(--color-text);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.company-tab-item.active {
+  color: var(--color-text);
+  border-bottom-color: var(--color-primary, #3b82f6);
+}
+
+/* Hero Section - 재무 건전성 분석 */
+.hero-section {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 32px;
+  margin-bottom: 40px;
+  padding: 32px;
+  background-color: var(--color-surface);
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+}
+
+.health-score-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.health-score-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.health-score-circle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+  border: 3px solid rgba(59, 130, 246, 0.3);
+  margin-bottom: 32px;
+}
+
+.score-number {
+  font-size: 64px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1;
+}
+
+.score-max {
+  font-size: 20px;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+}
+
+.health-bars {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.health-bar-item {
+  width: 100%;
+}
+
+.bar-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.bar-score {
+  color: var(--color-text-secondary);
+}
+
+.bar-track {
+  width: 100%;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.bar-fill.profitability {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.bar-fill.growth {
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+}
+
+.bar-fill.stability {
+  background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+}
+
+.health-disclaimer {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  margin-top: 16px;
+  line-height: 1.5;
+}
+
+.company-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.overview-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.tab-placeholder p {
+  font-size: 16px;
+  color: var(--color-text-secondary);
+}
+
+/* Dashboard Grid Layout */
+.dashboard-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+}
+
+/* All Sections - Unified Style */
+.key-metrics-section,
+.analyst-section,
+.insider-section,
+.financials-chart-section {
+  background-color: var(--color-surface);
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+}
+
+.key-metrics-section {
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.analyst-section.analyst-wide {
+  padding: 28px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.section-eyebrow {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-secondary);
+  margin-bottom: 4px;
+}
+
+.section-pill {
+  align-self: flex-start;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--color-border);
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+/* Insider Summary */
+.insider-summary {
+  padding: 20px;
+  background: radial-gradient(circle at top, rgba(59, 130, 246, 0.08), rgba(15, 23, 42, 0.6));
+  border-radius: 12px;
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.insider-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.insider-pill {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.insider-pill.positive {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+.insider-pill.negative {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+}
+
+.insider-pill.neutral {
+  background: rgba(148, 163, 184, 0.15);
+  color: #cbd5f5;
+}
+
+.insider-net {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.insider-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.insider-progress-row {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.insider-progress-track {
+  height: 6px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.insider-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.insider-progress-fill.buy {
+  background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.insider-progress-fill.sell {
+  background: linear-gradient(90deg, #f97316, #f87171);
+}
+
+.insider-trade-list {
+  margin-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.insider-trade-item {
+  display: grid;
+  grid-template-columns: 110px 90px 1fr;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.insider-trade-item .trade-date {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.insider-trade-item .trade-type {
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+
+.insider-empty {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Chart Placeholder */
+.chart-placeholder {
+  padding: 60px 20px;
+  text-align: center;
+  background-color: var(--color-background);
+  border-radius: 8px;
+  border: 2px dashed var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.financial-chart-container {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.financial-chart-summary {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.financial-chart-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+  padding: 6px 14px;
+}
+
+.financial-chart-summary-item strong {
+  font-size: 14px;
+}
+
+.financial-chart-summary-item strong.up {
+  color: var(--color-success);
+}
+
+.financial-chart-summary-item strong.down {
+  color: var(--color-danger);
+}
+
+.financial-chart-empty {
+  padding: 48px 20px;
+  text-align: center;
+  color: var(--color-text-secondary);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.01);
+}

@@ -1,0 +1,252 @@
+FMP Key Loaded: True
+
+============================================================
+🔍 Key Metrics DB 접근 테스트: AAPL (annual)
+============================================================
+
+📊 [1단계] DB에서 직접 쿼리 (원시 데이터)
+------------------------------------------------------------
+✅ 조회된 레코드 수: 5
+
+📋 DB 원시 데이터 (최신 3개):
+
+  [1] 2025-09-27 (연도: 2025)
+      PER: 34.0929
+      PBR: 51.7915
+      ROE: 1.5191
+      ROA: None
+      생성일: 2025-11-17 18:29:33
+
+  [2] 2024-09-28 (연도: 2024)
+      PER: 37.2873
+      PBR: 61.3724
+      ROE: 1.6459
+      ROA: None
+      생성일: 2025-11-17 18:29:33
+
+  [3] 2023-09-30 (연도: 2023)
+      PER: 27.7908
+      PBR: 43.3748
+      ROE: 1.5608
+      ROA: None
+      생성일: 2025-11-17 18:29:33
+
+============================================================
+📊 [2단계] 서비스 함수를 통한 접근 (가공된 데이터)
+------------------------------------------------------------
+[Cache MISS] FMP API 4개 동시 호출: key-metrics, ratios, quote, estimates (AAPL)
+✅ 서비스 함수 실행 성공
+
+📋 반환된 데이터 구조:
+  - records 개수: 5
+  - insights: 있음
+  - summary: 있음
+
+📋 records 데이터 (최신 3개):
+
+  [1] 2025-09-27 (연도: 2025)
+      PER: 34.0929
+      PBR: 51.7915
+      ROE: 1.5191
+      ROA: None
+
+  [2] 2024-09-28 (연도: 2024)
+      PER: 37.2873
+      PBR: 61.3724
+      ROE: 1.6459
+      ROA: None
+
+  [3] 2023-09-30 (연도: 2023)
+      PER: 27.7908
+      PBR: 43.3748
+      ROE: 1.5608
+      ROA: None
+
+📊 Insights:
+  - 현재 PER: 34.0929
+  - 이전 PER: 37.2873
+  - 평균 PER: 29.90582
+  - 이전 대비 변화율: -8.566991978502069%
+  - 평균 대비 변화율: 14.000886783910296%
+
+📝 Summary:
+  📊 밸류에이션 요약
+- 최근 PER(2025-09-27)은 34.09.
+- 과거 평균 대비 14.0% 높습니다.
+- 평가 요약: 평균 수준.
+
+⚙️ 퀄리티 지표
+- ROE: 151.9%
+- PBR: 51.79
+- EV/EBITDA: 26.99
+
+💸 주주 환원
+- 배당 수익률: 0.40%
+- 총 Shareholder Yield: 0.40%
+
+PER/PEG 해석은 업종 평균, 성장성, 이익 변동성, 주주 환원 정책과 함께 검토해야 합니다.
+
+============================================================
+📋 [3단계] 전체 JSON 데이터 (디버깅용)
+------------------------------------------------------------
+{
+  "records": [
+    {
+      "report_date": "2025-09-27",
+      "report_year": 2025,
+      "pe_ratio": 34.0929,
+      "price_to_book_ratio": 51.7915,
+      "forward_pe": null,
+      "peg_ratio": null,
+      "enterprise_value_to_ebitda": 26.9865,
+      "return_on_equity": 1.5191,
+      "return_on_assets": null,
+      "debt_to_equity": 1.5241,
+      "dividend_yield": 0.004,
+      "current_ratio": 0.8933,
+      "revenue_per_share": 27.8396,
+      "net_income_per_share": 7.4931,
+      "free_cash_flow_per_share": 6.6072,
+      "shares_outstanding": 14776353000.0,
+      "market_cap": 3818743810000.0,
+      "book_value_per_share": 4.9325,
+      "price_to_sales_ratio": 9.1761
+    },
+    {
+      "report_date": "2024-09-28",
+      "report_year": 2024,
+      "pe_ratio": 37.2873,
+      "price_to_book_ratio": 61.3724,
+      "forward_pe": null,
+      "peg_ratio": null,
+      "enterprise_value_to_ebitda": 26.617,
+      "return_on_equity": 1.6459,
+      "return_on_assets": null,
+      "debt_to_equity": 2.0906,
+      "dividend_yield": 0.0044,
+      "current_ratio": 0.8673,
+      "revenue_per_share": 25.4849,
+      "net_income_per_share": 6.1091,
+      "free_cash_flow_per_share": 7.0913,
+      "shares_outstanding": 14776353000.0,
+      "market_cap": 3495160329570.0,
+      "book_value_per_share": 3.7116,
+      "price_to_sales_ratio": 8.9382
+    },
+    {
+      "report_date": "2023-09-30",
+      "report_year": 2023,
+      "pe_ratio": 27.7908,
+      "price_to_book_ratio": 43.3748,
+      "forward_pe": null,
+      "peg_ratio": null,
+      "enterprise_value_to_ebitda": 22.1708,
+      "return_on_equity": 1.5608,
+      "return_on_assets": null,
+      "debt_to_equity": 1.9942,
+      "dividend_yield": 0.0056,
+      "current_ratio": 0.988,
+      "revenue_per_share": 24.3445,
+      "net_income_per_share": 6.1607,
+      "free_cash_flow_per_share": 6.3251,
+      "shares_outstanding": 14776353000.0,
+      "market_cap": 2695569789510.0,
+      "book_value_per_share": 3.9472,
+      "price_to_sales_ratio": 7.0328
+    },
+    {
+      "report_date": "2022-09-24",
+      "report_year": 2022,
+      "pe_ratio": 24.4418,
+      "price_to_book_ratio": 48.1403,
+      "forward_pe": null,
+      "peg_ratio": null,
+      "enterprise_value_to_ebitda": 19.1395,
+      "return_on_equity": 1.9696,
+      "return_on_assets": null,
+      "debt_to_equity": 2.6145,
+      "dividend_yield": 0.0061,
+      "current_ratio": 0.8794,
+      "revenue_per_share": 24.3173,
+      "net_income_per_share": 6.1546,
+      "free_cash_flow_per_share": 6.8724,
+      "shares_outstanding": 14776353000.0,
+      "market_cap": 2439367314090.0,
+      "book_value_per_share": 3.1248,
+      "price_to_sales_ratio": 6.1861
+    },
+    {
+      "report_date": "2021-09-25",
+      "report_year": 2021,
+      "pe_ratio": 25.9163,
+      "price_to_book_ratio": 38.8929,
+      "forward_pe": null,
+      "peg_ratio": null,
+      "enterprise_value_to_ebitda": 20.7521,
+      "return_on_equity": 1.5007,
+      "return_on_assets": null,
+      "debt_to_equity": 2.1639,
+      "dividend_yield": 0.0059,
+      "current_ratio": 1.0746,
+      "revenue_per_share": 21.9035,
+      "net_income_per_share": 5.669,
+      "free_cash_flow_per_share": 5.5656,
+      "shares_outstanding": 14776353000.0,
+      "market_cap": 2453750882240.0,
+      "book_value_per_share": 3.7776,
+      "price_to_sales_ratio": 6.7076
+    }
+  ],
+  "insights": {
+    "current_pe": 34.0929,
+    "current_report_date": "2025-09-27",
+    "previous_pe": 37.2873,
+    "average_pe": 29.90582,
+    "forward_pe": null,
+    "peg_ratio": null,
+    "return_on_equity": 1.5191,
+    "return_on_assets": null,
+    "price_to_book_ratio": 51.7915,
+    "enterprise_value_to_ebitda": 26.9865,
+    "dividend_yield": 0.004,
+    "buyback_yield": null,
+    "shareholder_yield": 0.004,
+    "shares_outstanding": 14776353000.0,
+    "market_cap": 3818743810000.0,
+    "change_vs_previous_percent": -8.566991978502069,
+    "change_vs_average_percent": 14.000886783910296,
+    "pe_history": [
+      {
+        "report_date": "2025-09-27",
+        "pe_ratio": 34.0929
+      },
+      {
+        "report_date": "2024-09-28",
+        "pe_ratio": 37.2873
+      },
+      {
+        "report_date": "2023-09-30",
+        "pe_ratio": 27.7908
+      },
+      {
+        "report_date": "2022-09-24",
+        "pe_ratio": 24.4418
+      },
+      {
+        "report_date": "2021-09-25",
+        "pe_ratio": 25.9163
+      }
+    ],
+    "valuation_quality": "평균 수준",
+    "cash_flow_reference": {
+      "report_date": "2025-09-27",
+      "common_stock_repurchased": null,
+      "dividends_paid": null
+    },
+    "disclaimer": "PER 해석은 업종 평균, 성장 전망, 이익 변동성, 주주환원 정책을 함께 고려해야 하며 투자 판단의 유일한 근거로 사용하지 마십시오."
+  },
+  "summary": "📊 밸류에이션 요약\n- 최근 PER(2025-09-27)은 34.09.\n- 과거 평균 대비 14.0% 높습니다.\n- 평가 요약: 평균 수준.\n\n⚙️ 퀄리티 지표\n- ROE: 151.9%\n- PBR: 51.79\n- EV/EBITDA: 26.99\n\n💸 주주 환원\n- 배당 수익률: 0.40%\n- 총 Shareholder Yield: 0.40%\n\nPER/PEG 해석은 업종 평균, 성장성, 이익 변동성, 주주 환원 정책과 함께 검토해야 합니다."
+}
+
+============================================================
+
