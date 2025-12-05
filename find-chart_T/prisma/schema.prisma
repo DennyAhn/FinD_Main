@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== User & Auth ====================
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  alerts Alert[]
+
+  @@index([email])
+}
+
+// ==================== Alert ====================
+
+model Alert {
+  id              String    @id @default(cuid())
+  userId          String
+  symbol          String    @db.VarChar(20)
+  type            String    @db.VarChar(20) // 'price' | 'indicator'
+  condition       String    @db.VarChar(20) // 'above' | 'below' | 'cross_above' | 'cross_below'
+  value           Float
+  indicator       String?   @db.VarChar(20) // 'rsi', 'macd', etc.
+  indicatorParams Json?
+  timeframe       String?   @db.VarChar(10) // '1m', '5m', etc.
+  status          String    @default("active") @db.VarChar(20) // 'active' | 'triggered' | 'disabled'
+  triggeredAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([symbol, type, status])
+}
+
+// ==================== Candle Data ====================
+// category: 'stock' | 'crypto' | 'forex' | 'commodity' | 'metal' | 'index'
+// 
+// 집계봉(5m, 15m, 1h, 4h, 1d, 1w, 1mo)은 TimescaleDB Continuous Aggregates로 관리됩니다.
+// 애플리케이션에서는 1분봉만 저장하고, 상위 타임프레임은 DB 뷰를 조회합니다.
+// - market.candle_5m
+// - market.candle_15m
+// - market.candle_1h
+// - market.candle_4h
+// - market.candle_1d
+// - market.candle_1w
+// - market.candle_1mo
+
+model Candle1m {
+  time     DateTime @db.Timestamptz
+  symbol   String   @db.VarChar(20)
+  category String   @default("stock") @db.VarChar(20)
+  open     Float
+  high     Float
+  low      Float
+  close    Float
+  volume   Float
+
+  @@id([time, symbol])
+  @@index([category])
+}
+
+// ==================== System & Audit ====================
+
+model DeadLetter {
+  id        String   @id @default(cuid())
+  module    String   @db.VarChar(50) // 'candle_buffer', 'realtime_sync', etc.
+  action    String   @db.VarChar(50) // 'flush_failed', 'parse_error', etc.
+  data      Json // 실패한 원본 데이터 (Candle 배열, 틱 데이터 등)
+  reason    String? // 에러 메시지
+  createdAt DateTime @default(now())
+
+  @@index([module, createdAt])
+  @@index([createdAt])
+}
