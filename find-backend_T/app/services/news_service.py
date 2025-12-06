@@ -11,12 +11,114 @@ FMP_BASE_URL = "https://financialmodelingprep.com/api/v3"
 async def search_summarized_news(ticker: str, db: Session) -> list:
     """
     특정 티커(ticker)와 연관된 요약 뉴스 목록을 조회합니다.
+    Smart Caching: DB 뉴스가 6시간 이내면 DB 사용, 아니면 API 호출 후 DB 저장.
     """
-    db_news = db.query(models.NewsArticle)\
-                .filter(models.NewsArticle.symbols.like(f"%{ticker}%"))\
-                .order_by(models.NewsArticle.publishedDate.desc())\
-                .limit(10).all()
-    return [{"title": n.title, "summary": n.summary, "url": n.url, "publishedDate": n.publishedDate.isoformat()} for n in db_news]
+    from datetime import datetime, timedelta
+    
+    print(f"[News Service] 뉴스 조회 시작 ({ticker})")
+    
+    # Step 1: DB에서 최신 뉴스 확인
+    latest_news = db.query(models.NewsArticle)\
+                    .filter(models.NewsArticle.symbols.like(f"%{ticker}%"))\
+                    .order_by(models.NewsArticle.publishedDate.desc())\
+                    .first()
+    
+    # Step 2: 신선도 체크 (6시간)
+    needs_refresh = True
+    if latest_news and latest_news.publishedDate:
+        try:
+            # publishedDate가 문자열이면 datetime으로 변환
+            if isinstance(latest_news.publishedDate, str):
+                latest_date = datetime.fromisoformat(latest_news.publishedDate.replace('Z', '+00:00'))
+            else:
+                latest_date = latest_news.publishedDate
+            
+            time_diff = datetime.now(latest_date.tzinfo) - latest_date
+            if time_diff < timedelta(hours=6):
+                needs_refresh = False
+                print(f"[News Service] DB 캐시 사용 (최신 뉴스: {time_diff.seconds//3600}시간 전)")
+        except Exception as e:
+            print(f"[News Service] 날짜 파싱 에러: {e}, API 호출로 전환")
+    
+    # Step 3: 신선하면 DB에서 가져오기
+    if not needs_refresh:
+        db_news = db.query(models.NewsArticle)\
+                    .filter(models.NewsArticle.symbols.like(f"%{ticker}%"))\
+                    .order_by(models.NewsArticle.publishedDate.desc())\
+                    .limit(20).all()
+        
+        result = []
+        for n in db_news:
+            p_date = n.publishedDate
+            if hasattr(p_date, 'isoformat'):
+                p_date = p_date.isoformat()
+            result.append({
+                "title": n.title,
+                "summary": n.summary,
+                "url": n.url,
+                "publishedDate": p_date
+            })
+        print(f"[News Service] DB에서 {len(result)}개 뉴스 반환")
+        return result
+    
+    # Step 4: 오래되었거나 없으면 API 호출
+    print(f"[News Service] DB 캐시 만료 또는 없음, API 호출 중...")
+    api_news = []
+    try:
+        url = f"{FMP_BASE_URL}/stock_news?tickers={ticker}&limit=20&apikey={FMP_API_KEY}"
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(url, timeout=5.0)
+            if resp.status_code == 200:
+                api_data = resp.json() or []
+                print(f"[News Service] API에서 {len(api_data)}개 뉴스 수신")
+                
+                # Step 5: DB에 저장 (중복 체크)
+                for item in api_data:
+                    # 반환용 리스트에 추가
+                    api_news.append({
+                        "title": item.get("title"),
+                        "summary": item.get("text"),
+                        "url": item.get("url"),
+                        "publishedDate": item.get("publishedDate")
+                    })
+                    
+                    # DB에 저장 (중복 체크)
+                    exists = db.query(models.NewsArticle).filter_by(url=item.get("url")).first()
+                    if not exists:
+                        new_article = models.NewsArticle(
+                            url=item.get("url"),
+                            title=item.get("title") or "",
+                            publishedDate=item.get("publishedDate"),
+                            symbols=ticker,  # 현재 ticker 저장
+                            summary=item.get("text") or ""
+                        )
+                        db.add(new_article)
+                
+                db.commit()
+                print(f"[News Service] DB에 신규 뉴스 저장 완료")
+                
+    except Exception as e:
+        print(f"[News Service] API 호출 실패: {e}")
+        db.rollback()
+        # Fallback: DB에서라도 가져오기
+        db_news = db.query(models.NewsArticle)\
+                    .filter(models.NewsArticle.symbols.like(f"%{ticker}%"))\
+                    .order_by(models.NewsArticle.publishedDate.desc())\
+                    .limit(20).all()
+        
+        for n in db_news:
+            p_date = n.publishedDate
+            if hasattr(p_date, 'isoformat'):
+                p_date = p_date.isoformat()
+            api_news.append({
+                "title": n.title,
+                "summary": n.summary,
+                "url": n.url,
+                "publishedDate": p_date
+            })
+    
+    return api_news
+
 
 async def fetch_and_store_latest_news(db: Session, client: httpx.AsyncClient):
     print("[Celery Task] 최신 뉴스 수집 시작...")

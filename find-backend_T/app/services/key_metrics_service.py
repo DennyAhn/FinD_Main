@@ -70,6 +70,8 @@ async def fetch_company_key_metrics(
     if normalized_period not in {"annual", "quarter"}:
         raise ValueError("period 값은 'annual' 또는 'quarter'만 지원합니다.")
 
+    if limit:
+        limit = int(limit)
     limit = max(1, min(limit, 8))
 
     # --- 0. 프로필 보강 [수정됨] ---
@@ -269,8 +271,15 @@ async def fetch_company_key_metrics(
                         try:
                             if abs(current_eps) > 0.01: # 0으로 나누기 방지
                                 growth_rate = ((estimated_eps_next - current_eps) / abs(current_eps)) * 100
-                                if growth_rate > 0:
-                                    peg_ratio = pe_ratio / growth_rate
+                                # [Wall Street Standard] PEG = Forward PE / Growth Rate
+                                metric_pe = forward_pe if forward_pe and forward_pe > 0 else pe_ratio
+                                if growth_rate > 0 and metric_pe:
+                                    calc_peg = metric_pe / growth_rate
+                                    # [Safety Check] PEG < 0.1 is usually a data error (implies >400% growth for PE 40)
+                                    if calc_peg > 0.1:
+                                        peg_ratio = calc_peg
+                                    else:
+                                        print(f"[Warning] PEG {calc_peg} too low, discarding.")
                         except Exception:
                             pass
 

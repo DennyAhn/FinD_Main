@@ -107,13 +107,42 @@ async def search_company_by_name(query: str, db: Session, client: httpx.AsyncCli
             "ticker": r.ticker,
             "companyName": r.companyName,
             "k_name": r.k_name,
-            "description": r.description,
             "industry": r.industry,
             "sector": r.sector,
             "website": r.website,
             "logo_url": r.logo_url,
+            "next_step_hint": "Ticker found. NOW YOU MUST CALL 'fetch_company_key_metrics' (Valuation) OR 'fetch_earnings_surprises' (Earnings). DO NOT ANSWER YET."
         } for r in db_results]
     
-    # DB에 없으면 빈 배열 반환 (외부 API 검색 제거)
+    # 2. [NEW] DB 검색 실패 시, 한글이면 번역 후 재시도
     print(f"[Search] DB에 '{query}' 검색 결과 없음")
+    
+    # 한글 감지 (간단한 방법: 한글 유니코드 범위 체크)
+    if any('\uac00' <= char <= '\ud7a3' for char in query):
+        print(f"[Search] 한글 감지, 번역 시도: '{query}'")
+        translated_query = await translate_korean_to_english(query)
+        
+        # 번역된 이름으로 재검색
+        db_results_translated = db.query(models.CompanyProfile).filter(
+            or_(
+                models.CompanyProfile.companyName.like(f"%{translated_query}%"),
+                models.CompanyProfile.ticker.like(f"%{translated_query}%")
+            )
+        ).limit(5).all()
+        
+        if db_results_translated:
+            print(f"[Search] 번역 후 DB에서 {len(db_results_translated)}개 결과 찾음")
+            return [{
+                "ticker": r.ticker,
+                "companyName": r.companyName,
+                "k_name": r.k_name,
+                "industry": r.industry,
+                "sector": r.sector,
+                "website": r.website,
+                "logo_url": r.logo_url,
+                "next_step_hint": "Ticker found. NOW YOU MUST CALL 'fetch_company_key_metrics' (Valuation) OR 'fetch_earnings_surprises' (Earnings). DO NOT ANSWER YET."
+            } for r in db_results_translated]
+    
+    # 3. 최종 실패
+    print(f"[Search] 최종 검색 실패: '{query}'")
     return []
