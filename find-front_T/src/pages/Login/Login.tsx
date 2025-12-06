@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { AxiosError } from 'axios'
 import { authApi } from '@/services/api/auth'
 import { useAuthStore } from '@/store/useAuthStore'
@@ -10,11 +9,18 @@ interface ErrorResponse {
 }
 
 export default function Login() {
-  const navigate = useNavigate()
-  const { login } = useAuthStore()
+  const { login, isAuthenticated } = useAuthStore()
   const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // 이미 로그인된 사용자는 대시보드로 리다이렉트
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('✅ Already authenticated, redirecting to dashboard')
+      window.location.href = '/'
+    }
+  }, [isAuthenticated])
 
   // 로그인 폼
   const [loginForm, setLoginForm] = useState({
@@ -41,17 +47,31 @@ export default function Login() {
         username: loginForm.username,
         password: loginForm.password,
       })
+
+      console.log('✅ Login response:', response)
+
+      // 응답 데이터 확인
+      if (!response || !response.access_token) {
+        throw new Error('토큰을 받지 못했습니다.')
+      }
+
+      // 토큰 저장 및 인증 상태 업데이트
       login(response.access_token)
-      navigate('/')
+      console.log('✅ Token saved, redirecting...')
+
+      // 상태 업데이트를 위한 짧은 지연 후 리다이렉트
+      // Zustand store 업데이트가 완료되도록 보장
+      setTimeout(() => {
+        window.location.href = '/'
+      }, 100)
     } catch (error) {
       const err = error as AxiosError<ErrorResponse>
-      console.error('Login error:', err)
-      const errorMessage = 
-        err.response?.data?.detail || 
-        err.message || 
+      console.error('❌ Login error:', err)
+      const errorMessage =
+        err.response?.data?.detail ||
+        err.message ||
         '로그인에 실패했습니다. 서버 연결을 확인해주세요.'
       setError(errorMessage)
-    } finally {
       setLoading(false)
     }
   }
@@ -74,9 +94,9 @@ export default function Login() {
     } catch (error) {
       const err = error as AxiosError<ErrorResponse>
       console.error('Register error:', err)
-      const errorMessage = 
-        err.response?.data?.detail || 
-        err.message || 
+      const errorMessage =
+        err.response?.data?.detail ||
+        err.message ||
         '회원가입에 실패했습니다. 서버 연결을 확인해주세요.'
       setError(errorMessage)
     } finally {

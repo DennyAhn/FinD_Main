@@ -32,19 +32,21 @@
 
 .symbol-button {
   background: #1a1a1a;
-  border: 1px solid #2a2a2a;
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   padding: 16px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
   user-select: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .symbol-button:hover {
-  border-color: #363A45;
+  border-color: rgba(59, 130, 246, 0.4);
   background: #222;
   transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.15);
 }
 
 .symbol-button.active {
@@ -98,9 +100,16 @@
 .chart-section {
   margin-bottom: 12px;
   background: #1a1a1a;
-  border: 1px solid #2a2a2a;
-  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
   padding: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.chart-section:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.15);
 }
 
 /* 퍼포먼스 & 시계열 섹션 */
@@ -113,9 +122,17 @@
 
 .analysis-card {
   background: #1a1a1a;
-  border: 1px solid #2a2a2a;
-  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
   padding: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.analysis-card:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.15);
 }
 
 .analysis-card-header {
@@ -293,12 +310,20 @@
 
 .widget-card {
   background: #1a1a1a;
-  border-radius: 12px;
-  border: 1px solid #2a2a2a;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
   padding: 12px;
   min-height: 200px;
   flex: 1;
   min-width: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.widget-card:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.15);
 }
 
 .widget-header {

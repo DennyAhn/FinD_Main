@@ -24,18 +24,15 @@ export const authApi = {
     const formData = new URLSearchParams()
     formData.append('username', credentials.username)
     formData.append('password', credentials.password)
-    
+
     try {
       const response = await apiClient.post('/auth/login', formData.toString(), {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       })
-      
-      if (response.data.access_token) {
-        localStorage.setItem('access_token', response.data.access_token)
-      }
-      
+
+      // localStorage 저장은 useAuthStore의 login() 함수에서 처리
       return response.data
     } catch (error: any) {
       console.error('Login API error:', error)
@@ -55,7 +52,7 @@ export const authApi = {
 
   // 로그아웃
   logout: (): void => {
-    localStorage.removeItem('access_token')
+    sessionStorage.removeItem('access_token')
   },
 
   // 현재 사용자 정보 조회

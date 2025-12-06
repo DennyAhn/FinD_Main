@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import Sidebar from './Sidebar'
 import TopNav from './TopNav'
 import AISidebar from './AISidebar'
+import { useChatStore } from '@/store/useChatStore'
 import './Layout.css'
 
 interface LayoutProps {
@@ -9,6 +10,8 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
+  const { isOpen: isChatOpen } = useChatStore()
+  
   return (
     <div className="layout">
       <Sidebar />
@@ -18,7 +21,7 @@ export default function Layout({ children }: LayoutProps) {
           <main className="layout-content">{children}</main>
         </div>
       </div>
-      <AISidebar />
+      {isChatOpen && <AISidebar />}
     </div>
   )
 }

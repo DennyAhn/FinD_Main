@@ -360,8 +360,13 @@
 }
 
 @keyframes skeleton-loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .empty-message {
@@ -385,8 +390,267 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
+/* 기업 카드 그리드 */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
 
+/* 기업 카드 스타일 */
+.dashboard-card {
+  background: #1a1a1a;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 그라디언트 보더 */
+.card-gradient-border {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 30%, rgba(255, 255, 255, 0.02) 60%, transparent 100%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1px;
+}
+
+.dashboard-card:hover .card-gradient-border {
+  opacity: 1;
+}
+
+/* 스포트라이트 효과 */
+.card-spotlight {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 30%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.1s linear;
+  transform: translate(-50%, -50%);
+  left: var(--mouse-x, 50%);
+  top: var(--mouse-y, 50%);
+  z-index: 0;
+}
+
+.dashboard-card:hover .card-spotlight {
+  opacity: 1;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.15);
+  background: linear-gradient(135deg, #1c1c1c 0%, #1a1a1a 100%);
+}
+
+/* 카드 헤더 */
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.card-logo-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.card-logo-glow {
+  position: absolute;
+  inset: -8px;
+  background: var(--brand-color, #3b82f6);
+  border-radius: 12px;
+  opacity: 0;
+  filter: blur(20px);
+  transition: opacity 0.3s ease;
+  z-index: 0;
+}
+
+.dashboard-card:hover .card-logo-glow {
+  opacity: 0.2;
+}
+
+.card-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--color-surface-elevated, #1e2127);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.card-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  position: relative;
+  z-index: 1;
+}
+
+.card-company-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-company-name {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-text, #e8e9ed);
+  margin: 0 0 6px 0;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-company-subtext {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text-secondary, #6b7280);
+  margin: 0;
+  flex-wrap: wrap;
+}
+
+.card-company-en {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-text-secondary, #6b7280);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-ticker {
+  padding: 2px 8px;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 4px;
+  color: #60a5fa;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+/* 카드 주가 정보 */
+.card-quote {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-price {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text, #e8e9ed);
+  line-height: 1.2;
+}
+
+.card-price-placeholder {
+  font-size: 14px;
+  color: var(--color-text-secondary, #6b7280);
+}
+
+.card-change {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.card-change.positive {
+  color: #f87171;
+}
+
+.card-change.negative {
+  color: #4ade80;
+}
+
+.card-change-icon {
+  font-size: 12px;
+}
+
+.card-change-amount {
+  font-weight: 600;
+}
+
+.card-change-percent {
+  opacity: 0.9;
+}
+
+/* Skeleton Card Styles */
+.skeleton-card {
+  pointer-events: none;
+  cursor: default !important;
+}
+
+.skeleton-card:hover {
+  transform: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #2a2a2a 25%, #333 50%, #2a2a2a 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-card .card-logo {
+  background: #2a2a2a;
+}
+
+.skeleton-card .skeleton-line {
+  background: linear-gradient(90deg, #2a2a2a 25%, #333 50%, #2a2a2a 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  border-radius: 4px;
+}

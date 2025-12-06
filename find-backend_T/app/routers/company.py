@@ -239,8 +239,8 @@ async def get_all_companies(
         result.append({
             "ticker": comp.ticker,
             "companyName": comp.companyName,
-            "K_name" : comp.k_name,
-            "description" : comp.description,
+            "k_name": comp.k_name,
+            "description": comp.description,
             "industry": comp.industry,
             "sector": comp.sector,
             "website": comp.website,
