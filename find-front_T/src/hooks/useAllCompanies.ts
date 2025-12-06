@@ -24,34 +24,55 @@ export function useAllCompanies(limit: number = 100) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [marketStatus, setMarketStatus] = useState<MarketStatus>(isUSMarketOpen())
-  const hasLoadedRef = useRef(false)
+  const isLoadingRef = useRef(false)
+  const mountedRef = useRef(true)
 
   useEffect(() => {
-    // 중복 요청 방지
-    if (hasLoadedRef.current) return
-    hasLoadedRef.current = true
-
+    // 컴포넌트가 마운트되었는지 확인
+    mountedRef.current = true
+    isLoadingRef.current = false // 새로고침 시 초기화
+    
     const loadData = async () => {
+      // 이미 로딩 중이면 중복 요청 방지
+      if (isLoadingRef.current) return
+      isLoadingRef.current = true
+      
+      if (!mountedRef.current) return
+      
       setLoading(true)
       setError(null)
 
       try {
         // 1단계: 모든 기업 프로필 가져오기
         const fetchedCompanies = await companyApi.getAllCompanies(limit)
+        
+        if (!mountedRef.current) {
+          isLoadingRef.current = false
+          return
+        }
+        
         setAllCompanies(fetchedCompanies)
         setCompanies(fetchedCompanies) // 초기에는 전체 표시
 
         if (fetchedCompanies.length === 0) {
           setError('데이터를 불러올 수 없습니다.')
           setLoading(false)
+          isLoadingRef.current = false
           return
         }
 
         // 2단계: 처음 20개 주가 빠르게 로딩
         const firstBatch = fetchedCompanies.slice(0, 20)
         const firstQuotes = await loadQuoteBatch(firstBatch)
+        
+        if (!mountedRef.current) {
+          isLoadingRef.current = false
+          return
+        }
+        
         setQuotes(firstQuotes)
         setLoading(false) // 초기 로딩 완료!
+        isLoadingRef.current = false
 
         // 3단계: 나머지 주가 배치로 로딩 (10개씩)
         const remaining = fetchedCompanies.slice(20)
@@ -59,8 +80,17 @@ export function useAllCompanies(limit: number = 100) {
 
       } catch (err: any) {
         console.error('All companies load error:', err)
+        if (!mountedRef.current) {
+          isLoadingRef.current = false
+          return
+        }
+        
         setError('데이터를 불러오는 중 오류가 발생했습니다.')
         setLoading(false)
+        isLoadingRef.current = false
+        // 에러 발생 시에도 빈 배열로 설정하여 UI가 렌더링되도록
+        setAllCompanies([])
+        setCompanies([])
       }
     }
 
@@ -107,6 +137,12 @@ export function useAllCompanies(limit: number = 100) {
     }
 
     loadData()
+
+    // cleanup: 컴포넌트 언마운트 시 ref 초기화 (새로고침 대응)
+    return () => {
+      mountedRef.current = false
+      isLoadingRef.current = false
+    }
   }, [limit])
 
   // 증시 필터가 변경되면 기업 목록 필터링

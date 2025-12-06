@@ -1,6 +1,7 @@
 # app/routers/market.py (Tool 분리 버전)
 
 import httpx
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
@@ -46,4 +47,17 @@ async def get_market_quote_test(
         "close": quote_data.get("close"),
         "change": quote_data.get("change"),
         "percent_change": quote_data.get("percent_change"),
+    }
+
+@router.get("/server-time")
+async def get_server_time():
+    """
+    서버의 현재 시간을 반환합니다.
+    클라이언트가 서버 시간과 동기화하기 위해 사용합니다.
+    """
+    now = datetime.utcnow()
+    return {
+        "timestamp": int(now.timestamp() * 1000),  # 밀리초 단위
+        "iso": now.isoformat(),
+        "utc": now.timestamp()
     }

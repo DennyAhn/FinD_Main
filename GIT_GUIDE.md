@@ -26,14 +26,15 @@ cd FinD_Main
 - **Frontend 팀원**
 
 ```bash
-cd frontend
+cd find-front_T
 npm install  # 또는 yarn install
+npm run dev  # 개발 서버 실행 (http://localhost:5173)
 ```
 
 - **Backend 팀원**
 
 ```bash
-cd backend
+cd find-backend_T
 # 가상환경 생성 및 실행 후
 pip install -r requirements.txt
 ```
@@ -103,14 +104,19 @@ git push origin feat/chart-ui
 
 ```plaintext
 FinD_Main/
-├── backend/           # FastAPI 서버 코드
+├── find-backend_T/    # FastAPI 서버 코드
 │   ├── app/
 │   ├── venv/          # (가상환경 - git에 안 올라감)
 │   └── requirements.txt
 │
-├── frontend/          # React 클라이언트 코드
+├── find-front_T/      # React 클라이언트 코드 (Vite)
 │   ├── src/
 │   ├── node_modules/  # (라이브러리 - git에 안 올라감)
+│   └── package.json
+│
+├── find-chart_T/      # 차트 서버 코드 (TypeScript/Node.js)
+│   ├── src/
+│   ├── prisma/
 │   └── package.json
 │
 └── README.md          # 프로젝트 소개 및 사용법
@@ -120,8 +126,8 @@ FinD_Main/
 
 ## 4. ⚠️ 자주 나오는 문제 (Troubleshooting)
 
-- **`npm start`가 안 돼요!**
-  - `frontend` 폴더 안으로 이동했는지(`cd frontend`) 확인
+- **`npm run dev`가 안 돼요!**
+  - `find-front_T` 폴더 안으로 이동했는지(`cd find-front_T`) 확인
   - `npm install` (또는 `yarn install`)을 했는지 확인
 
 - **Push가 안 돼요! (403 Error)**
@@ -141,8 +147,8 @@ FinD_Main/
 ### 5-1. 같은 파일, 같은 줄(또는 가까운 줄)을 여러 사람이 고칠 때
 
 - 예시
-  - 여러 명이 `frontend/src/components/Header.tsx`의 같은 버튼/텍스트를 각각 다른 내용으로 수정
-  - `backend/app/main.py`의 같은 라우트 함수 안 로직을 동시에 수정
+  - 여러 명이 `find-front_T/src/components/Header.tsx`의 같은 버튼/텍스트를 각각 다른 내용으로 수정
+  - `find-backend_T/app/main.py`의 같은 라우트 함수 안 로직을 동시에 수정
 - 이유
   - Git이 “어느 쪽이 맞는지”를 자동으로 판단하지 못해서 두 변경을 병합하지 못합니다.
 

@@ -18,29 +18,62 @@
   font-size: 16px;
 }
 
+/* 뒤로가기 아이콘 버튼 (기업명 옆) */
+.back-button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-right: 12px;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.back-button-icon:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+}
+
+.back-button-icon:active {
+  transform: scale(0.95);
+}
+
+.back-button-icon .back-icon {
+  width: 20px;
+  height: 20px;
+}
+
 .company-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 32px;
-  padding-bottom: 32px;
+  margin-bottom: 0;
+  padding-bottom: 16px;
   border-bottom: 1px solid var(--color-border);
 }
 
 .company-header-left {
   flex: 1;
   display: flex;
-  align-items: center;
-  gap: 20px;
+  align-items: flex-start;
+  gap: 16px;
 }
 
 /* 로고 (깔끔하게 - wrapper 제거) */
 .company-logo-clean {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
   object-fit: contain;
   flex-shrink: 0;
+  background: var(--color-surface-elevated, #1e2127);
+  padding: 4px;
 }
 
 /* 현대적 기업 정보 */
@@ -48,52 +81,47 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   justify-content: center;
 }
 
-/* 제목 행 (한 줄에 이름 + 티커) */
-.company-title-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
+/* 한글 기업명 (위에 크게) */
 .company-name-primary {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--color-text);
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.3;
+}
+
+/* 제목 행 (영문명 + 티커) */
+.company-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.company-name-secondary {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
 }
 
 /* 티커 뱃지 */
 .company-ticker-badge {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
-  background-color: rgba(59, 130, 246, 0.15);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  border-radius: 6px;
-  font-size: 13px;
+  padding: 4px 12px;
+  background-color: rgba(59, 130, 246, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  border-radius: 12px;
+  font-size: 12px;
   font-weight: 600;
   color: #60a5fa;
   letter-spacing: 0.5px;
-  line-height: 1;
-}
-
-/* 메타 정보 행 (영문명 · NASDAQ) */
-.company-meta-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--color-text-secondary);
-}
-
-.company-name-secondary {
-  font-weight: 400;
-  line-height: 1.4;
+  line-height: 1.2;
 }
 
 .meta-divider {
@@ -133,11 +161,11 @@
 }
 
 .company-change.positive {
-  color: var(--color-success);
+  color: var(--color-danger, #ef4444);
 }
 
 .company-change.negative {
-  color: var(--color-danger);
+  color: var(--color-success, #22c55e);
 }
 
 /* 북마크 버튼 */
@@ -356,26 +384,70 @@
   display: flex;
   gap: 12px;
   margin-bottom: 32px;
+  position: relative;
+}
+
+.company-search-input-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.company-search-icon {
+  position: absolute;
+  left: 16px;
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .company-search-input {
   flex: 1;
-  padding: 14px 18px;
+  padding: 14px 18px 14px 48px;
   background: #1e2127;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 15px;
   color: var(--color-text);
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.2s ease;
+  padding-right: 100px;
 }
 
 .company-search-input:focus {
-  border-color: #3d4149;
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .company-search-input::placeholder {
   color: var(--color-text-secondary);
+}
+
+.company-search-shortcut {
+  position: absolute;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.company-search-shortcut-key {
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .company-search-button {
@@ -548,6 +620,19 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  background: #1a1a1a;
+  padding: 32px 24px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.health-score-container:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), 0 0 60px rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
 }
 
 .health-score-title {

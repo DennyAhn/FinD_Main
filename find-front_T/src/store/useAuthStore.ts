@@ -8,10 +8,10 @@ interface AuthState {
   checkAuth: () => void
 }
 
-// localStorage에서 초기값 가져오기
+// sessionStorage에서 초기값 가져오기 (탭 닫으면 자동 삭제)
 const getInitialAuth = () => {
   if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('access_token')
+    const token = sessionStorage.getItem('access_token')
     return {
       isAuthenticated: !!token,
       token,
@@ -26,15 +26,15 @@ const getInitialAuth = () => {
 export const useAuthStore = create<AuthState>((set) => ({
   ...getInitialAuth(),
   login: (token: string) => {
-    localStorage.setItem('access_token', token)
+    sessionStorage.setItem('access_token', token)
     set({ isAuthenticated: true, token })
   },
   logout: () => {
-    localStorage.removeItem('access_token')
+    sessionStorage.removeItem('access_token')
     set({ isAuthenticated: false, token: null })
   },
   checkAuth: () => {
-    const token = localStorage.getItem('access_token')
+    const token = sessionStorage.getItem('access_token')
     set({ isAuthenticated: !!token, token })
   },
 }))

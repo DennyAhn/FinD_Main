@@ -1,11 +1,14 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { companyApi } from '@/services/api/company'
 import { searchApi } from '@/services/api/search'
+import { useMarketStore } from '@/store/useMarketStore'
 import type { Company, StockQuote, FinancialMetric, AnalystCardWidget, MetricsGridWidget } from '@/types'
 import { useAllCompanies } from '@/hooks/useAllCompanies'
 import { COMPANY_DETAIL_TABS } from '@/constants'
 import CompanyCard from '@/components/company/CompanyCard'
+import SkeletonCard from '@/components/company/SkeletonCard'
 import Loading from '@/components/common/Loading'
 import AnalystCard from '@/components/widgets/AnalystCard'
 import MetricsGrid from '@/components/widgets/MetricsGrid'
@@ -15,9 +18,27 @@ import { AdvancedChartWidget } from '@/widgets/advanced-chart'
 import './CompanyDetail.css'
 import '../Dashboard/Dashboard.css'
 
+// 카드 애니메이션 variants
+const cardVariants = {
+  hidden: {
+    opacity: 0,
+    y: 20
+  },
+  visible: (index: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.4, 0, 0.2, 1] as const, // cubic-bezier for easeOut
+      delay: index * 0.05
+    }
+  })
+}
+
 export default function CompanyDetail() {
   const { ticker } = useParams<{ ticker: string }>()
   const navigate = useNavigate()
+  const { selectedMarket } = useMarketStore()
   const [company, setCompany] = useState<Company | null>(null)
   const [quote, setQuote] = useState<StockQuote | null>(null)
   const [metrics, setMetrics] = useState<FinancialMetric[]>([])
@@ -41,6 +62,33 @@ export default function CompanyDetail() {
     quotes: dashboardQuotes,
     loading: dashboardLoading
   } = useAllCompanies(50)
+
+  // 선택된 마켓에 따른 제목 텍스트
+  const getMarketTitle = () => {
+    switch (selectedMarket) {
+      case 'NASDAQ':
+        return 'NASDAQ 100'
+      case 'DOW':
+        return '다우 30'
+      case 'SP500':
+        return 'S&P 500'
+      case 'ALL':
+      default:
+        return '인기 기업'
+    }
+  }
+
+  // ESC 키로 뒤로가기
+  useEffect(() => {
+    const handleEscKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        navigate(-1)
+      }
+    }
+
+    window.addEventListener('keydown', handleEscKey)
+    return () => window.removeEventListener('keydown', handleEscKey)
+  }, [navigate])
 
   useEffect(() => {
     if (!ticker) {
@@ -231,14 +279,23 @@ export default function CompanyDetail() {
       <div className="company-detail">
         <div className="company-search-section">
           <div className="company-search-container">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              placeholder="기업명 또는 티커를 입력하세요 (예: 애플, AAPL)"
-              className="company-search-input"
-            />
+            <div className="company-search-input-wrapper">
+              <svg className="company-search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                placeholder="기업명 또는 티커를 입력하세요 (예: 애플, AAPL)"
+                className="company-search-input"
+              />
+              <div className="company-search-shortcut">
+                <span className="company-search-shortcut-key">⌘</span>
+                <span className="company-search-shortcut-key">K</span>
+              </div>
+            </div>
             <button
               onClick={handleSearch}
               className="company-search-button"
@@ -252,13 +309,20 @@ export default function CompanyDetail() {
             <div className="company-search-results">
               <h3 className="company-search-results-title">검색 결과 ({searchResults.length}개)</h3>
               <div className="dashboard-grid">
-                {searchResults.map((comp) => (
-                  <CompanyCard
+                {searchResults.map((comp, index) => (
+                  <motion.div
                     key={comp.ticker}
-                    company={comp}
-                    quote={searchQuotes[comp.ticker]}
-                    onClick={() => handleCompanyClick(comp.ticker)}
-                  />
+                    variants={cardVariants}
+                    initial="hidden"
+                    animate="visible"
+                    custom={index}
+                  >
+                    <CompanyCard
+                      company={comp}
+                      quote={searchQuotes[comp.ticker]}
+                      onClick={() => handleCompanyClick(comp.ticker)}
+                    />
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -277,21 +341,41 @@ export default function CompanyDetail() {
           {!searchQuery.trim() && (
             <>
               {dashboardLoading ? (
-                <div className="company-loading">
-                  <Loading />
+                <div className="company-dashboard-section">
+                  <h2 className="company-dashboard-title">{getMarketTitle()}</h2>
+                  <div className="dashboard-grid">
+                    {Array.from({ length: 8 }).map((_, index) => (
+                      <SkeletonCard key={index} />
+                    ))}
+                  </div>
+                </div>
+              ) : dashboardCompanies.length > 0 ? (
+                <div className="company-dashboard-section">
+                  <h2 className="company-dashboard-title">{getMarketTitle()}</h2>
+                  <div className="dashboard-grid">
+                    {dashboardCompanies.map((comp, index) => (
+                      <motion.div
+                        key={comp.ticker}
+                        variants={cardVariants}
+                        initial="hidden"
+                        animate="visible"
+                        custom={index}
+                      >
+                        <CompanyCard
+                          company={comp}
+                          quote={dashboardQuotes[comp.ticker]}
+                          onClick={() => handleCompanyClick(comp.ticker)}
+                        />
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
               ) : (
-                <div className="company-dashboard-section">
-                  <h2 className="company-dashboard-title">인기 기업</h2>
-                  <div className="dashboard-grid">
-                    {dashboardCompanies.map((comp) => (
-                      <CompanyCard
-                        key={comp.ticker}
-                        company={comp}
-                        quote={dashboardQuotes[comp.ticker]}
-                        onClick={() => handleCompanyClick(comp.ticker)}
-                      />
-                    ))}
+                <div className="company-loading">
+                  <div className="search-no-results">
+                    <div className="no-results-icon">📊</div>
+                    <div className="no-results-text">데이터를 불러올 수 없습니다</div>
+                    <div className="no-results-hint">잠시 후 다시 시도해주세요</div>
                   </div>
                 </div>
               )}
@@ -318,6 +402,17 @@ export default function CompanyDetail() {
     <div className="company-detail">
       <div className="company-header">
         <div className="company-header-left">
+          {/* 뒤로가기 아이콘 버튼 */}
+          <button
+            onClick={() => navigate(-1)}
+            className="back-button-icon"
+            title="뒤로가기 (ESC)"
+          >
+            <svg className="back-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
           {company.logo_url && (
             <img
               src={company.logo_url}
@@ -330,19 +425,20 @@ export default function CompanyDetail() {
             />
           )}
           <div className="company-info-modern">
-            <div className="company-title-row">
-              <h1 className="company-name-primary">{company.companyName}</h1>
-              <span className="company-ticker-badge">{ticker}</span>
-            </div>
-            <div className="company-meta-row">
-              {company.k_name && (
-                <>
-                  <span className="company-name-secondary">{company.k_name}</span>
-                  <span className="meta-divider">·</span>
-                </>
-              )}
-              <span className="company-exchange">NASDAQ</span>
-            </div>
+            {company.k_name ? (
+              <>
+                <h1 className="company-name-primary">{company.k_name}</h1>
+                <div className="company-title-row">
+                  <span className="company-name-secondary">{company.companyName}</span>
+                  <span className="company-ticker-badge">{ticker}</span>
+                </div>
+              </>
+            ) : (
+              <div className="company-title-row">
+                <h1 className="company-name-primary">{company.companyName}</h1>
+                <span className="company-ticker-badge">{ticker}</span>
+              </div>
+            )}
           </div>
         </div>
         <div className="company-header-right">
@@ -350,8 +446,7 @@ export default function CompanyDetail() {
             <div className="company-price-info">
               <div className="company-price">${quote.price.toFixed(2)}</div>
               <div className={`company-change ${quote.change >= 0 ? 'positive' : 'negative'}`}>
-                {quote.change >= 0 ? '+' : ''}${Math.abs(quote.change).toFixed(2)} (
-                {quote.changePercent >= 0 ? '+' : ''}{quote.changePercent.toFixed(2)}%)
+                {quote.change >= 0 ? '▲' : '▼'}${Math.abs(quote.change).toFixed(2)} ({quote.changePercent >= 0 ? '+' : ''}{quote.changePercent.toFixed(2)}%)
               </div>
             </div>
           )}
