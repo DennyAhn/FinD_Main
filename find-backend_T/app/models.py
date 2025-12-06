@@ -2,7 +2,7 @@
 
 from sqlalchemy import (
     Column, Integer, String, TIMESTAMP, TEXT, ForeignKey, 
-    DECIMAL, BIGINT, JSON, Date, UniqueConstraint
+    DECIMAL, BIGINT, JSON, Date, UniqueConstraint, DateTime
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -250,10 +250,18 @@ class EarningsCalendar(Base):
     ticker = Column(String(20), ForeignKey("company_profiles.ticker"), nullable=False)
     date = Column(Date, nullable=False)
     period = Column(String(10), nullable=False)
-    eps_estimate = Column(DECIMAL(10, 2))
-    eps_actual = Column(DECIMAL(10, 2))
+    market_time = Column(String(10))  # bmo, amc, dms
+
+    eps_estimate = Column(DECIMAL(10, 4))
+    eps_actual = Column(DECIMAL(10, 4))
+    eps_surprise_percent = Column(DECIMAL(10, 4))
+
     revenue_estimate = Column(BIGINT)
     revenue_actual = Column(BIGINT)
+    revenue_surprise_percent = Column(DECIMAL(10, 4))
+
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
     company = relationship("CompanyProfile", back_populates="earnings")
 

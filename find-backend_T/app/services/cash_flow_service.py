@@ -49,6 +49,8 @@ async def fetch_company_cash_flows(
     if normalized_period not in {"annual", "quarter"}:
         raise ValueError("period 값은 'annual' 또는 'quarter'만 지원합니다.")
 
+    if limit:
+        limit = int(limit)
     limit = max(1, min(limit, 12))
 
     latest_record = (
