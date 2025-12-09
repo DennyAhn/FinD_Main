@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams } from 'react-router-dom'
 import { chatApi } from '@/services/api/chat'
 import type { ChatMessage } from '@/types'
+import SimpleMarkdown from '../common/SimpleMarkdown'
 import WidgetRenderer from '../widgets/WidgetRenderer'
 import './AISidebar.css'
 
@@ -396,10 +397,12 @@ export default function AISidebar() {
         <div className="ai-chat-messages">
           {messages.map((msg, idx) => (
             <div key={idx} className={`ai-chat-message ${msg.role}`}>
-              <div className="ai-chat-message-content">{msg.content}</div>
+              <div className="ai-chat-message-content">
+                <SimpleMarkdown>{msg.content}</SimpleMarkdown>
+              </div>
               {/* [NEW] 위젯 렌더링 */}
               {msg.widgets && msg.widgets.length > 0 && (
-                <div className="ai-chat-widgets" style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '12px', border: '1px dashed red', padding: '8px' }}>
+                <div className="ai-chat-widgets">
                   {msg.widgets.map((widget, wIdx) => (
                     <WidgetRenderer key={wIdx} widget={widget} />
                   ))}
