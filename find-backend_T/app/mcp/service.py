@@ -101,6 +101,129 @@ async def run_mcp_agent(
             
             ### 2.3 Narrative Polish Rules (MANDATORY)
             
+            **Rule 0: CRITICAL Financial Terminology (MUST FOLLOW)**
+            1. **Revenue vs Profit (매출 vs 이익)**:
+               - When summarizing government policies (Tariffs, Fees), you **MUST** distinguish between:
+                 - **"Sales/Revenue" (판매 금액/매출)**: Total money received.
+                 - **"Profit/Earnings" (수익/이익)**: Money left after costs.
+               - **Case Study**: Trump's "25% of chip sales" means **"Sales Revenue"**, NOT "Profit". Correct this immediately.
+               - **Warning**: Confusing these two is a critical failure that can mislead users about bankruptcy risks.
+
+            2. **Source Attribution (출처 명시)**:
+               - For shocking news (like "giving 25% to gov"), **ALWAYS** cite the speaker directly.
+               - **Bad**: "미국 정부에 제공해야 하는 규제가 붙었습니다." (Sounds like a confirmed law)
+               - **Good**: "트럼프 대통령이 소셜미디어를 통해 **'판매 금액의 25%를 미국 정부에 지급하는 조건'**을 언급했습니다." (Clarifies it is a statement)
+
+            3. **Capital Allocation Terminology (자본 배분 용어 정의)**:
+               - **Total Capital Allocation (총 자본 배분)** = Buybacks + Dividends + CapEx
+               - **Shareholder Return (주주 환원)** = Buybacks + Dividends ONLY (when specifically mentioning "return to shareholders")
+               - **Correct Usage**:
+                 - "총 자본 배분: $37.8B" ✅ (includes all three)
+                 - "자사주 매입과 배당을 포함한 주주환원 규모" ✅ (Buyback + Div only)
+                 - "주주환원에 $34.5B, 설비투자에 $3.2B 사용" ✅ (when breaking down)
+            
+            4. **Professional Financial Report Format (전문 리포트 형식)**:
+               
+               **Standard Output Template for Cash Flow Analysis:**
+               ```
+               [Company]의 최근 현금 흐름 데이터 (FY[Year], [Year]년 [Month]월 종료 기준)
+               
+               ● 운영 현금 흐름 (Operating Cash Flow): $XX.XB
+               ● 투자 현금 흐름 (Investing Cash Flow): -$XX.XB
+               ● 재무 현금 흐름 (Financing Cash Flow): -$XX.XB
+               ● 자본 지출 (CapEx): -$X.XB
+               ● 자유 현금 흐름 (Free Cash Flow): $XX.XB
+               ● 주식 매입 (Buyback): -$XX.XB
+               ● 배당금 지급 (Dividends Paid): -$XXXM
+               ● 총 자본 배분 (Total Capital Allocation): $XX.XB
+               
+               💡 추가 인사이트
+               ● [강력한/탁월한] [metric] 능력을 보유하고 있습니다.
+               ● 전체 매출의 약 [XX]%가 자유 현금 흐름으로 남아, [평가] 수익 구조를 보여줍니다.
+               ● 자사주 매입과 배당을 포함한 주주환원 규모가 [평가], 주주 친화적인 정책을 지속하고 있습니다.
+               ● 전반적으로 [Company]는 [종합 평가].
+               
+               이 분석은 공개된 재무 데이터에 기반한 참고 자료이며, 투자 권유가 아닙니다.
+               
+               Source: [Company] FY[Year] Company Filings, 기준일: [YYYY]년 [M]월.
+               ```
+               
+               **Writing Style Guidelines:**
+               - **CRITICAL**: ALWAYS use `●` (black circle) for ALL bullet points, not `-` or `*`
+               - Use professional descriptors: "강력한", "탁월한", "높은", "안정적인"
+               - Provide exactly 4 bullet points in "💡 추가 인사이트" section
+               - Each bullet point MUST start with `●` followed by a space
+               - Always include disclaimer and source at the end
+               - Be comprehensive and insightful, not just data listing
+               
+               **Correct Bullet Format:**
+               ```
+               ● 엔비디아는 강력한 영업 현금 흐름을...
+               ● 전체 매출의 약 46.6%가...
+               ```
+               
+               **WRONG Formats (DO NOT USE):**
+               ```
+               - 엔비디아는... ❌
+               * 엔비디아는... ❌
+               • 엔비디아는... ❌
+               ```
+               
+               **Output Templates for Other Analysis Types:**
+               
+               **For Valuation Analysis:**
+               ```
+               [Company]의 현재 밸류에이션 (기준일: [YYYY]년 [M]월)
+               
+               ● 주가-수익 비율 (PER): XX.X
+               ● Forward PER: XX.X
+               ● PEG Ratio: X.XX
+               ● 주가-장부가 비율 (PBR): X.XX
+               ● 자기자본이익률 (ROE): XX.X%
+               
+               💡 밸류에이션 인사이트
+               ● [Historical/Sector comparison with specific numbers]
+               ● [Growth-adjusted valuation assessment]
+               ● [Quality metrics (ROE, margins) context]
+               ● [Overall valuation conclusion]
+               ```
+               
+               **For Earnings Analysis:**
+               ```
+               [Company]의 [QX FY20XX] 실적 발표 (발표일: [YYYY]년 [M]월 [D]일)
+               
+               ● EPS: $X.XX (예상: $X.XX, 서프라이즈: +X.X%)
+               ● 매출: $XX.XB (예상: $XX.XB, +X.X%)
+               ● 영업이익률: XX.X% (전년 동기: XX.X%)
+               ● 순이익: $XX.XB (YoY +XX.X%)
+               
+               💡 실적 분석
+               ● [Beat/Miss context with Wall Street expectations]
+               ● [Margin trends and profitability]
+               ● [Guidance and forward outlook]
+               ● [Market reaction and stock performance context]
+               ```
+               
+               **Number Formatting Standards:**
+               - **CRITICAL**: Use consistent units with proper decimal places
+               - **Billions**: Use `$XX.XB` format (e.g., `$64.1B`, NOT `$64,089,000,000`)
+               - **Millions**: Use `$XXXM` format (e.g., `$834M`, NOT `$834,000,000`)
+               - **Negative values**: Use minus sign before dollar (e.g., `-$3.2B`, NOT `($3.2B)`)
+               - **Percentages**: Use one decimal place (e.g., `46.6%`, NOT `46.63%`)
+               - **Price movements**: Include arrow (e.g., `(145 → 137)`)
+               
+               **Examples:**
+               ```
+               ✅ 자유 현금 흐름: $60.9B
+               ✅ 배당금 지급: -$834M
+               ✅ FCF Margin: 46.6%
+               ✅ 주가 변동: -4.2% (145 → 137)
+               
+               ❌ 자유 현금 흐름: $60,900,000,000
+               ❌ 배당금 지급: ($834,000,000)
+               ❌ FCF Margin: 46.63421%
+               ```
+            
             **Rule 1: Time Period Specificity**
             - **NEVER** say "최근" without specifying the exact period
             - **ALWAYS** include date ranges or time frames:
@@ -274,13 +397,42 @@ async def run_mcp_agent(
             **Good Agent:** Calls `search_company` -> **Calls `fetch_company_key_metrics`** -> "Data shows Current PE is 75.4 and Forward PE is 39.8..." (Correct ✅)
 
             ### 5. Disclaimer (Mandatory)
-            - **ALWAYS** end your response with:
-              "이 분석은 데이터에 기반한 참고 자료이며, 투자 권유가 아닙니다."
+            - **ALWAYS** end your response with this exact format:
+              ```
+              이 분석은 공개된 재무 데이터에 기반한 참고 자료이며, 투자 권유가 아닙니다.
+              
+              Source: [Company] FY[Year] Company Filings, 기준일: [YYYY]년 [M]월.
+              ```
+            - **Note**: For Cash Flow / Earnings / Valuation analysis, ALWAYS include the Source line
+            - For general news/trend queries, disclaimer only is sufficient
 
             ### 0.5. Context Reset Rule (Memory Safety)
-            - **IF** the user mentions a NEW ticker or company name different from the previous conversation,
-            - **THEN** you MUST IGNORE all financial data/numbers from the previous conversation history.
+            
+            **A. Detect Ticker Change (Mandatory)**
+            - **IF** the user asks about a NEW company (e.g., switched from AAPL to NVDA),
+            - **THEN** you MUST DISCARD all financial data/numbers from the previous conversation history.
             - Treat it as a fresh start. Do NOT mix data from Company A with Company B.
+            
+            **B. Self-Verification Protocol (Before Every Answer)**
+            - Before finalizing your answer, ask yourself:
+              1. **"What ticker am I answering about?"** (Confirm from latest tool call)
+              2. **"Is the Revenue/EPS I'm about to state consistent with this ticker?"**
+              3. **"Did I accidentally use data from a previous company?"**
+            
+            - **Example Verification**:
+              - Current Ticker: NVDA
+              - I'm about to say: "Revenue is $102B"
+              - **STOP!** NVDA revenue is ~$60B. $102B is AAPL data.
+              - **Action**: Fetch fresh data with `fetch_company_income_statement("NVDA")`
+            
+            - **Red Flags (Hallucination Indicators)**:
+              - Revenue number seems wrong for the company size
+              - Mixing quarterly/annual figures
+              - Using data from conversation history without fresh tool call
+            
+            **C. Enforcement**
+            - If you detect ANY inconsistency, **STOP immediately** and call the appropriate tool again.
+            - NEVER proceed with suspicious data. Better to fetch twice than hallucinate once.
             """
         }
     ]
@@ -430,21 +582,27 @@ async def run_mcp_agent(
         db.commit() # 질문+답변을 한 번에 커밋
         print(f"[MCP Agent] 처리 완료 (답변 길이: {len(ai_response_content)} chars)\")")
 
-        # [NEW] 위젯 중복 제거 (Type + Ticker 기준)
-        unique_widgets = []
-        seen = set()
-        for w in collected_widgets:
-            # 위젯을 식별할 수 있는 키 생성 (type + ticker)
-            # ticker가 없으면 title 사용 (fallback)
-            ticker = w.get('ticker', '')
-            title = w.get('title', '')
-            key = f"{w.get('type')}_{ticker or title}"
-            
-            if key not in seen:
-                seen.add(key)
-                unique_widgets.append(w)
+        # [NEW] 위젯 중복 제거 (Type + Ticker 기준, 조건부 실행)
+        unique_widgets = collected_widgets
         
-        print(f"[MCP Agent] 위젯 중복 제거: {len(collected_widgets)} → {len(unique_widgets)}")
+        # 위젯이 2개 이상일 때만 중복 체크 (성능 최적화)
+        if len(collected_widgets) > 1:
+            unique_widgets = []
+            seen = set()
+            for w in collected_widgets:
+                # 위젯을 식별할 수 있는 키 생성 (type + ticker)
+                # ticker가 없으면 title 사용 (fallback)
+                ticker = w.get('ticker', '')
+                title = w.get('title', '')
+                key = f"{w.get('type')}_{ticker or title}"
+                
+                if key not in seen:
+                    seen.add(key)
+                    unique_widgets.append(w)
+            
+            # 실제로 중복이 제거되었을 때만 로그 출력
+            if len(unique_widgets) < len(collected_widgets):
+                print(f"[MCP Agent] ✂️ 위젯 중복 제거: {len(collected_widgets)} → {len(unique_widgets)}")
 
         # [NEW] 텍스트 답변과 위젯 리스트를 함께 반환 (딕셔너리 형태)
         return {

@@ -1,28 +1,43 @@
-/**
- * 숫자 포맷팅 유틸리티
- */
+export const formatLargeNumber = (value: number | string, showKorean: boolean = false): string => {
+  if (value === undefined || value === null) return '-';
 
-export const formatCurrency = (value: number, currency: string = 'USD'): string => {
-  return new Intl.NumberFormat('ko-KR', {
-    style: 'currency',
-    currency,
-  }).format(value)
-}
+  // 문자열인 경우 숫자 변환 (콤마 제거)
+  const num = typeof value === 'string' 
+    ? parseFloat(value.replace(/,/g, '')) 
+    : value;
 
-export const formatNumber = (value: number): string => {
-  return new Intl.NumberFormat('ko-KR').format(value)
-}
+  if (isNaN(num)) return String(value);
 
-export const formatPercent = (value: number, decimals: number = 2): string => {
-  return `${value.toFixed(decimals)}%`
-}
+  // 100만 미만은 일반적인 콤마 포맷
+  if (Math.abs(num) < 1e6) {
+    return new Intl.NumberFormat('en-US').format(num);
+  }
 
-export const formatDate = (date: string | Date): string => {
-  const d = typeof date === 'string' ? new Date(date) : date
-  return new Intl.DateTimeFormat('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(d)
-}
+  // USD 포맷팅 (M, B, T)
+  let usdFormatted = '';
+  if (Math.abs(num) >= 1e12) {
+    usdFormatted = `$${(num / 1e12).toFixed(2)}T`;
+  } else if (Math.abs(num) >= 1e9) {
+    usdFormatted = `$${(num / 1e9).toFixed(1)}B`;
+  } else {
+    // 100만 단위 ($M)
+    usdFormatted = `$${(num / 1e6).toFixed(0)}M`;
+  }
 
+  if (!showKorean) return usdFormatted;
+
+  // KRW 환산 (환율 1460원 기준)
+  const krwVal = num * 1460;
+  let krwFormatted = '';
+  
+  if (Math.abs(krwVal) >= 1e12) {
+    krwFormatted = `${(krwVal / 1e12).toFixed(1)}조원`;
+  } else if (Math.abs(krwVal) >= 1e8) {
+    krwFormatted = `${(krwVal / 1e8).toFixed(0)}억원`;
+  } else {
+    // 1억원 미만 (예: 5000만원)
+    krwFormatted = `${(krwVal / 1e4).toFixed(0)}만원`;
+  }
+
+  return `${usdFormatted} (약 ${krwFormatted})`;
+};

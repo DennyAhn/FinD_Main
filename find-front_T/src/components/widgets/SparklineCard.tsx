@@ -1,5 +1,6 @@
 import { SparklineCard } from '@/types'
 import { LineChart, Line, ResponsiveContainer, YAxis } from 'recharts'
+import { formatLargeNumber } from '@/utils/format'
 import './Widgets.css'
 
 interface SparklineCardProps {
@@ -18,14 +19,16 @@ export default function SparklineCardWidget({ widget }: SparklineCardProps) {
         <div className="widget-card">
             <div className="widget-label">{widget.label}</div>
             <div className="widget-value-row">
-                <div className="widget-value">{widget.value}</div>
+                <div className="widget-value" style={{ fontSize: '20px' }}>
+                    {formatLargeNumber(widget.value, true)}
+                </div>
                 {widget.change && (
                     <div className={`widget-change ${statusClass}`}>
                         {widget.change}
                     </div>
                 )}
             </div>
-            <div className="widget-chart-container">
+            <div className="widget-chart-container" style={{ height: '60px', width: '100%' }}>
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={data}>
                         <Line

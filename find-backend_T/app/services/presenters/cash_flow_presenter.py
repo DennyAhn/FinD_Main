@@ -62,12 +62,14 @@ def present_cash_flow(ticker: str, period: str, analysis: Dict[str, Any]) -> Ana
         ))
 
     # C. Insight Text
-    if insights:
-        md_content = "### 💡 Cash Flow Insights\n"
-        for insight in insights:
-            md_content += f"- {insight}\n"
-        
-        widgets.append(MarkdownText(content=md_content))
+    # [REMOVED] MarkdownText 위젯 중복 출력 방지
+    # AI가 insights 데이터를 보고 자연스럽게 텍스트로 설명하도록 맡김
+    # if insights:
+    #     md_content = "### 💡 Cash Flow Insights\n"
+    #     for insight in insights:
+    #         md_content += f"- {insight}\n"
+    #     
+    #     widgets.append(MarkdownText(content=md_content))
 
     return AnalysisResult(
         meta=AnalysisMeta(ticker=ticker, period=period),

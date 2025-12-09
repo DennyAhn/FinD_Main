@@ -488,7 +488,28 @@ async def fetch_company_key_metrics(
             "dividends_paid": latest_cash_flow.dividends_paid,
         }
 
-    # --- 5. [NEW] Server-Driven UI Framework Integration ---
+    # --- 5. [NEW] Calculate 5-Year Averages (For Valuation Context) ---
+    avg_metrics = {}
+    if len(payload) >= 3: # 최소 3년치 데이터는 있어야 평균 의미 있음
+        # 평균을 구할 지표들 (음수 제외, 0보다 큰 값만)
+        keys_to_avg = ["pe_ratio", "price_to_book_ratio", "peg_ratio", "price_to_sales_ratio"]
+        
+        for key in keys_to_avg:
+            # 이상치(Outlier) 제거: PER > 500 등은 제외할 수도 있으나 일단 단순 평균
+            values = [p[key] for p in payload if p.get(key) is not None and p[key] > 0]
+            if values:
+                avg_key = key.replace("_ratio", "") # pe_ratio -> avg_pe
+                if key == "pe_ratio": avg_key = "avg_pe"
+                elif key == "peg_ratio": avg_key = "avg_peg"
+                elif key == "price_to_book_ratio": avg_key = "avg_pbr"
+                
+                avg_metrics[avg_key] = sum(values) / len(values)
+    
+    # payload[0] (최신 데이터)에 평균값 주입 (Analyzer가 쓸 수 있게)
+    if payload:
+        payload[0].update(avg_metrics)
+
+    # --- 6. Server-Driven UI Framework Integration ---
     from app.services.analyzers.valuation_analyzer import analyze_valuation
     from app.services.presenters.valuation_presenter import present_valuation
 

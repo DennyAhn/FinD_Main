@@ -107,22 +107,34 @@ async def fetch_earnings_calendar(
                         return ((actual - estimate) / abs(estimate)) * 100
                     return None
 
-                db.merge(
-                    models.EarningsCalendar(
-                        ticker=item.get("symbol"),
-                        date=item.get("date"),
-                        period=item.get("fiscalDateEnding"),
-                        market_time=item.get("time"),
-                        
-                        eps_estimate=eps_est,
-                        eps_actual=eps_act,
-                        eps_surprise_percent=calc_surprise(eps_act, eps_est),
+                # [Fix] IntegrityError 방지를 위한 Upsert 로직 개선
+                # Unique Key: ticker + date + period
+                existing_record = db.query(models.EarningsCalendar).filter(
+                    models.EarningsCalendar.ticker == item.get("symbol"),
+                    models.EarningsCalendar.date == item.get("date"),
+                    models.EarningsCalendar.period == item.get("fiscalDateEnding")
+                ).first()
 
-                        revenue_estimate=rev_est,
-                        revenue_actual=rev_act,
-                        revenue_surprise_percent=calc_surprise(rev_act, rev_est),
-                    )
-                )
+                new_data = {
+                    "ticker": item.get("symbol"),
+                    "date": item.get("date"),
+                    "period": item.get("fiscalDateEnding"),
+                    "market_time": item.get("time"),
+                    "eps_estimate": eps_est,
+                    "eps_actual": eps_act,
+                    "eps_surprise_percent": calc_surprise(eps_act, eps_est),
+                    "revenue_estimate": rev_est,
+                    "revenue_actual": rev_act,
+                    "revenue_surprise_percent": calc_surprise(rev_act, rev_est),
+                }
+
+                if existing_record:
+                    # Update fields
+                    for key, value in new_data.items():
+                        setattr(existing_record, key, value)
+                else:
+                    # Insert new
+                    db.add(models.EarningsCalendar(**new_data))
 
             db.merge(
                 models.ApiCache(

@@ -312,6 +312,20 @@
   color: var(--color-text);
 }
 
+/* [NEW] 위젯 컨테이너 스타일 */
+.ai-chat-widgets {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+  width: 100%;
+  /* 자식 요소들이 높이를 가질 수 있도록 보장 */
+}
+
+.ai-chat-widgets .widget-card {
+  min-height: 120px; /* 차트가 렌더링될 최소 공간 확보 */
+}
+
 .ai-sidebar-footer {
   padding: 14px 16px;
   border-top: 1px solid var(--color-border);

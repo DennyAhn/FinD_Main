@@ -75,9 +75,14 @@ async def search_summarized_news(ticker: str, db: Session) -> list:
                 # Step 5: DB에 저장 (중복 체크)
                 for item in api_data:
                     # 반환용 리스트에 추가
+                    site = item.get("site", "Unknown")
+                    text = item.get("text", "")
+                    # [Source Injection] AI가 출처를 알 수 있도록 summary에 site 정보 주입
+                    enriched_summary = f"[{site}] {text}"
+
                     api_news.append({
                         "title": item.get("title"),
-                        "summary": item.get("text"),
+                        "summary": enriched_summary,
                         "url": item.get("url"),
                         "publishedDate": item.get("publishedDate")
                     })
@@ -90,7 +95,7 @@ async def search_summarized_news(ticker: str, db: Session) -> list:
                             title=item.get("title") or "",
                             publishedDate=item.get("publishedDate"),
                             symbols=ticker,  # 현재 ticker 저장
-                            summary=item.get("text") or ""
+                            summary=enriched_summary # DB에도 출처 포함된 텍스트 저장
                         )
                         db.add(new_article)
                 
@@ -133,14 +138,16 @@ async def fetch_and_store_latest_news(db: Session, client: httpx.AsyncClient):
             if not exists:
                 # title과 summary가 None이거나 빈 문자열인 경우 처리
                 title = item.get("title") or ""
-                summary = item.get("text") or ""
+                site = item.get("site", "Unknown")
+                text = item.get("text") or ""
+                enriched_summary = f"[{site}] {text}"
                 
                 new_article = models.NewsArticle(
                     url=item.get("url"),
                     title=title,
                     publishedDate=item.get("publishedDate"),
                     symbols=item.get("symbols"),
-                    summary=summary
+                    summary=enriched_summary
                 )
                 db.add(new_article)
                 count += 1
