@@ -21,6 +21,9 @@ export const useChart = (
   const renderedDataLengthRef = useRef<number>(0);
   const isLoadingMoreRef = useRef<boolean>(false);
 
+  // ✅ [추가] 현재 차트에 적용된 타임프레임을 추적하기 위한 Ref
+  const currentPropsTimeframeRef = useRef<string>(timeframe);
+
   // 1. 차트 생성 및 옵션 설정
   useEffect(() => {
     if (!chartContainerRef.current || !volumeContainerRef.current) return;
@@ -118,14 +121,31 @@ export const useChart = (
       isChartReadyRef.current = false;
       renderedDataLengthRef.current = 0;
       isLoadingMoreRef.current = false;
+      // cleanup 시에는 ref를 초기화하지 않음 (다음 렌더링 시 비교를 위해)
     };
   }, [timeframe, chartContainerRef, volumeContainerRef, onLoadMore]); 
 
-  // 2. 데이터 업데이트 로직
+  // 2. 데이터 업데이트 로직 (수정됨)
   useEffect(() => {
     if (!data || data.length === 0) return;
     if (!candlestickSeriesRef.current || !volumeSeriesRef.current) return;
 
+    // ✅ 타임프레임이 변경되었는지 확인
+    const isTimeframeChanged = currentPropsTimeframeRef.current !== timeframe;
+
+    // ✅ 타임프레임 변경 시 or 차트 초기화 시 -> 전체 데이터 새로 세팅 (setData)
+    if (isTimeframeChanged || !isChartReadyRef.current) {
+      candlestickSeriesRef.current.setData(data.map(d => ({ ...d.candle, time: d.candle.time as Time })));
+      volumeSeriesRef.current.setData(data.map(d => ({ ...d.volume, time: d.volume.time as Time })));
+      
+      isChartReadyRef.current = true;
+      renderedDataLengthRef.current = data.length;
+      currentPropsTimeframeRef.current = timeframe; // 변경된 타임프레임 반영
+      isLoadingMoreRef.current = false;
+      return;
+    }
+
+    // --- 여기서부터는 실시간 업데이트 로직 ---
     const currentLength = renderedDataLengthRef.current;
     const newLength = data.length;
 
@@ -133,30 +153,33 @@ export const useChart = (
         isLoadingMoreRef.current = false;
     }
 
-    if (!isChartReadyRef.current) {
+    const firstCandleTime = candlestickSeriesRef.current.data()[0]?.time;
+    const newFirstTime = data[0].candle.time;
+    
+    // 과거 데이터 로딩 (Prepend)
+    const isHistoryPrepend = firstCandleTime !== undefined && 
+       ((newFirstTime as number) < (firstCandleTime as number));
+
+    if (isHistoryPrepend) {
       candlestickSeriesRef.current.setData(data.map(d => ({ ...d.candle, time: d.candle.time as Time })));
       volumeSeriesRef.current.setData(data.map(d => ({ ...d.volume, time: d.volume.time as Time })));
-      
-      isChartReadyRef.current = true;
-      renderedDataLengthRef.current = newLength;
-    } 
-    else {
-      const firstCandleTime = candlestickSeriesRef.current.data()[0]?.time;
-      const newFirstTime = data[0].candle.time;
-      
-      const isHistoryPrepend = firstCandleTime !== undefined && (newFirstTime as number) < (firstCandleTime as number);
-
-      if (isHistoryPrepend) {
-        candlestickSeriesRef.current.setData(data.map(d => ({ ...d.candle, time: d.candle.time as Time })));
-        volumeSeriesRef.current.setData(data.map(d => ({ ...d.volume, time: d.volume.time as Time })));
-      } else {
-        for (let i = Math.max(0, currentLength - 1); i < newLength; i++) {
-          const item = data[i];
+    } else {
+      // 실시간 데이터 추가 (Update)
+      for (let i = Math.max(0, currentLength - 1); i < newLength; i++) {
+        const item = data[i];
+        try {
           candlestickSeriesRef.current.update({ ...item.candle, time: item.candle.time as Time });
           volumeSeriesRef.current.update({ ...item.volume, time: item.volume.time as Time });
+        } catch (error) {
+          // 🛡️ 안전장치: update 실패 시 (타임스탬프 꼬임 등) setData로 강제 동기화
+          console.warn('Chart update failed, forcing refresh:', error);
+          candlestickSeriesRef.current.setData(data.map(d => ({ ...d.candle, time: d.candle.time as Time })));
+          volumeSeriesRef.current.setData(data.map(d => ({ ...d.volume, time: d.volume.time as Time })));
+          break;
         }
       }
-      renderedDataLengthRef.current = newLength;
     }
-  }, [data]);
+    renderedDataLengthRef.current = newLength;
+
+  }, [data, timeframe]); // ✅ timeframe 의존성 필수
 };

@@ -49,6 +49,7 @@ interface SeedOptions {
   targetDate: Date;
   skipAggregation: boolean;
   category: string;
+  endDate?: Date;
 }
 
 // ==================== 유틸리티 ====================
@@ -94,6 +95,12 @@ function parseArgs(): SeedOptions {
           i++;
         }
         break;
+      case '--to':
+        if (next) {
+          options.endDate = new Date(next);
+          i++;
+        }
+        break;
       case '--skip-agg':
         options.skipAggregation = true;
         break;
@@ -117,6 +124,7 @@ function parseArgs(): SeedOptions {
   --symbols <심볼들>      여러 심볼 지정 (쉼표 구분)
   --category, -c <카테고리>  카테고리 (stock, crypto, forex, commodity, metal)
   --from <날짜>           목표 시작 날짜 (기본: 2025-01-01)
+  --to <날짜>             목표 종료 날짜 (기본: 현재)
   --skip-agg              상위 타임프레임 집계 건너뛰기
   --help, -h              도움말
 
@@ -134,8 +142,8 @@ function parseArgs(): SeedOptions {
 
 // ==================== 심볼별 시딩 ====================
 
-async function seedSymbol(symbol: string, targetDate: Date, category: string): Promise<number> {
-  let endDate: string | undefined = undefined;
+async function seedSymbol(symbol: string, targetDate: Date, category: string, maxDate?: Date): Promise<number> {
+  let endDate: string | undefined = maxDate ? maxDate.toISOString() : undefined;
   let totalSaved = 0;
   let requestCount = 0;
 
@@ -281,9 +289,12 @@ async function main(): Promise<void> {
   console.log('\n' + '🚀'.repeat(30));
   console.log('📅 과거 데이터 시딩 (Pro 플랜 최적화)');
   console.log('🚀'.repeat(30));
-  console.log(`\n대상: ${options.symbols.join(', ')}`);
+  console.log(`대상: ${options.symbols.join(', ')}`);
   console.log(`카테고리: ${options.category}`);
   console.log(`목표 날짜: ${formatDate(options.targetDate)} 이후 데이터`);
+  if (options.endDate) {
+    console.log(`종료 날짜: ${formatDate(options.endDate)} 이전 데이터`);
+  }
   console.log(`API 호출 간격: ${API_DELAY_MS}ms`);
 
   const startTime = Date.now();
@@ -291,7 +302,7 @@ async function main(): Promise<void> {
 
   // 1. 1분봉 수집
   for (const symbol of options.symbols) {
-    results[symbol] = await seedSymbol(symbol, options.targetDate, options.category);
+    results[symbol] = await seedSymbol(symbol, options.targetDate, options.category, options.endDate);
   }
 
   // 2. TimescaleDB Continuous Aggregates 갱신

@@ -14,7 +14,14 @@ export const useChartData = (symbol: string, timeframe: string) => {
   // 1. 초기 데이터 로드
   const { data, isLoading } = useQuery({
     queryKey: queryKey,
-    queryFn: ({ signal }) => fetchHistoricalCandles(symbol, timeframe, undefined, undefined, undefined, signal as AbortSignal),
+    queryFn: ({ signal }) => fetchHistoricalCandles(
+      symbol, 
+      timeframe, 
+      undefined,  
+      undefined,
+      200,  // 한 번에 조회하는 캔들 수
+      signal as AbortSignal
+    ),
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
     refetchOnWindowFocus: false,
