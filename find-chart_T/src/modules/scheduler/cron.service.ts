@@ -20,25 +20,46 @@ import { twelveDataLimiter } from '../../shared/utils/rate-limiter';
 const POLLING_SYMBOLS = [
   // 환율
   'USD/KRW',
-  'EUR/USD',
-  'USD/JPY',
+  'EUR/KRW',
+  'JPY/KRW',
+  'CNY/KRW',
+  'HKD/KRW',
+
   // 금속
   'XAU/USD',  // 금
   'XAG/USD',  // 은
+  'XPT/USD',  // 백금
+  'XPD/USD',  // 팔라듐
+  'CPER',     // 구리 ETF
+
+
   // 에너지 ETF
   'USO',      // United States Oil Fund
+  'BNO',
   'UNG',      // United States Natural Gas Fund
+  'UGA',
+  'DBE',
 ];
 
 // 심볼별 카테고리 매핑
 const SYMBOL_CATEGORY: Record<string, string> = {
   'USD/KRW': 'forex',
-  'EUR/USD': 'forex',
-  'USD/JPY': 'forex',
+  'EUR/KRW': 'forex',
+  'JPY/KRW': 'forex', 
+  'CNY/KRW': 'forex',
+  'HKD/KRW': 'forex',
+
   'XAU/USD': 'metal',
   'XAG/USD': 'metal',
+  'XPT/USD': 'metal',
+  'XPD/USD': 'metal',
+  'CPER'   : 'metal',
+
   'USO': 'commodity',
+  'BNO': 'commodity',
   'UNG': 'commodity',
+  'UGA': 'commodity',
+  'DBE': 'commodity',
 };
 
 // TwelveData API 응답 타입

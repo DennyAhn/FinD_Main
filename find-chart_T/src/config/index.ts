@@ -29,7 +29,7 @@ const env = cleanEnv(process.env, {
   TWELVE_DATA_API_KEY: str({ desc: 'TwelveData API 키' }),
 
   // Streaming (선택)
-  STREAM_SYMBOLS: str({ default: 'SPY,QQQ,DIA,BTC/USD' }),
+  STREAM_SYMBOLS: str({ default: 'SPY,QQQ,DIA,BTC/USD,AAPL,AMZN,AVGO,COST,GOOGL,JNJ,JPM,LLY,META,MRK,MSFT,NVDA,PG,TSLA,UNH,V,XOM'}),
 
   // CORS (선택)
   CORS_ORIGIN: str({ default: 'http://localhost:3000' }),

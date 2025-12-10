@@ -172,6 +172,7 @@ export class CandleRepository {
       low: number;
       close: number;
       volume: number;
+      category?: string;
     }>
   ): Promise<number> {
     const result = await prisma.candle1m.createMany({
@@ -198,6 +199,18 @@ export class CandleRepository {
       min: result._min.time,
       max: result._max.time,
     };
+  }
+
+  /**
+   * 심볼의 마지막 N개 1분봉 조회
+   */
+  async getLastCandles(symbol: string, limit: number = 1) {
+    const candles = await prisma.candle1m.findMany({
+      where: { symbol },
+      orderBy: { time: 'desc' },
+      take: limit,
+    });
+    return candles; // desc 정렬 그대로 반환 (index 0이 가장 최신)
   }
 
   /**

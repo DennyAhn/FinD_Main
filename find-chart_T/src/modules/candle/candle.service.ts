@@ -26,7 +26,9 @@ export class CandleService {
       to?: number | undefined;   // epoch seconds
     }
   ): Promise<CandleResponse> {
-    const { limit = 1000, from, to } = options;
+    const { from, to} = options;
+    const requestLimit = options.limit ?? 300;
+    const fetchLimit = requestLimit + 1;
     
     // 타임프레임 유효성 검사
     validateTimeframe(timeframeStr);
@@ -38,7 +40,7 @@ export class CandleService {
       data = await candleRepository.findDailyCandles(symbol, timeframeStr as DailyTimeframe, {
         ...(from && { from: epochToDate(from) }),
         ...(to && { to: epochToDate(to) }),
-        limit,
+        limit: fetchLimit,
         orderDesc: !(from !== undefined && to !== undefined),
       });
     }
@@ -71,14 +73,14 @@ export class CandleService {
         if (is1m) {
           data = await candleRepository.find1mCandles(symbol, {
             ...(to && { to: epochToDate(to) }),
-            limit,
+            limit: fetchLimit,
             orderDesc: true,
           });
         } else {
           // TimescaleDB Continuous Aggregate 사용
           data = await candleRepository.findContinuousAggCandles(symbol, timeframeMinutes, {
             ...(to && { to: epochToDate(to) }),
-            limit,
+            limit: fetchLimit,
             orderDesc: true,
           });
         }

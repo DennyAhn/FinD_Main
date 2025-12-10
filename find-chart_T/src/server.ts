@@ -22,13 +22,15 @@ httpServer.listen(port, async () => {
   logger.info('WebSocket available', { url: `ws://localhost:${port}/ws` });
   
   try {
-    // 1. 서버 시작 시 데이터 동기화 (백필)
-    await syncMissingData();
-    
-    // 2. 동기화 완료 후 실시간 스트림 연결
+    // 웹소켓 연결 (실시간 데이터 수신 시작)
     connectToTwelveData();
     
-    // 3. 폴링 스케줄러 시작 (환율, 에너지 등)
+    // 데이터 동기화 (백그라운드 실행)
+    syncMissingData().catch(err => {
+      logger.error('Background sync failed', { error: err });
+    });
+    
+    // 폴링 스케줄러 시작 (환율, 에너지 등)
     initScheduler();
     
   } catch (err) {

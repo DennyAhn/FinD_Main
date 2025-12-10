@@ -1,4 +1,5 @@
 import { prisma } from '../../shared';
+import { summaryRepository } from '../summary/summary.repository';
 import {
   QuoteItem,
   QuoteSummaryResponse,
@@ -10,27 +11,35 @@ import {
   ENERGY_SYMBOLS,
   TICKER_SYMBOLS,
 } from './quote.types';
+import pLimit from 'p-limit';
 
 class QuoteService {
   /**
-   * 심볼의 최신 시세 조회 (1분봉 기준 - 실시간 데이터)
+   * 심볼의 최신 시세 조회 (실시간 가격  전일 종가 비교)
    */
   private async getQuoteForSymbol(symbol: string): Promise<QuoteItem | null> {
-    // 1분봉 테이블에서 가장 최근 2개 캔들 조회
-    const candles = await prisma.candle1m.findMany({
-      where: { symbol },
+    // 1분봉 테이블에서 가장 최근 1개 캔들 조회
+    // 성능 최적화를 위해 최근 7일 데이터만 조회 (Out of shared memory 방지)
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    const latestCandle = await prisma.candle1m.findFirst({
+      where: { 
+        symbol,
+        time: { gte: oneWeekAgo }
+      },
       orderBy: { time: 'desc' },
-      take: 2,
     });
 
-    if (candles.length === 0) return null;
+    if (!latestCandle) return null;
 
-    const latest = candles[0]!;
-    const prev = candles[1];
+    // 전일 종가를 구하기 위해 어제 날짜의 일봉을 조회
+    const prevClose = await this.getPreviousClosePrice(symbol);
 
-    const price = latest.close;
-    const prevClose = prev?.close ?? latest.open;
+    const price = latestCandle.close;
     const change = price - prevClose;
+
+    // 전일 종가가 0이거나 없을 경우(신규 상장 등) 변동률 0 처리
     const changePercent = prevClose !== 0 ? (change / prevClose) * 100 : 0;
 
     const meta = SYMBOL_META[symbol];
@@ -42,9 +51,32 @@ class QuoteService {
       change: Number(change.toFixed(2)),
       changePercent: Number(changePercent.toFixed(2)),
       isUp: change >= 0,
-      volume: latest.volume,
-      updatedAt: latest.time.toISOString(),
+      volume: latestCandle.volume,
+      updatedAt: latestCandle.time.toISOString(),
     };
+  }
+
+  private async getPreviousClosePrice(symbol: string): Promise<number>{
+    // UTC 기준 오늘 00:00:00
+    const now = new Date();
+    const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+
+    // 성능 최적화를 위해 30일 전까지만 조회
+    const thirtyDaysAgo = new Date(todayUTC);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    // market.candle_1d 뷰에서 오늘 이전(bucket < todayUTC) 데이터 중 가장 최신 1개 조회
+    const prevDailyCandles = await prisma.$queryRaw<Array<{ close: number}>>`
+      SELECT close
+      FROM market.candle_1d
+      WHERE symbol = ${symbol}
+        AND bucket < ${todayUTC}
+        AND bucket >= ${thirtyDaysAgo}
+      ORDER BY bucket DESC
+      LIMIT 1
+    `;
+
+    return prevDailyCandles[0]?.close ?? 0;
   }
 
   /**
@@ -52,14 +84,15 @@ class QuoteService {
    * DB 연결 풀 고갈 방지를 위해 순차 처리
    */
   private async getQuotesForSymbols(symbols: string[]): Promise<QuoteItem[]> {
-    const quotes: QuoteItem[] = [];
-    for (const symbol of symbols) {
-      const quote = await this.getQuoteForSymbol(symbol);
-      if (quote) {
-        quotes.push(quote);
-      }
-    }
-    return quotes;
+    const limit = pLimit(2);
+
+    const quotes = await Promise.all(
+      symbols.map(symbol => 
+        limit(() => this.getQuoteForSymbol(symbol))
+      )
+    );
+
+    return quotes.filter((q): q is QuoteItem => q !== null)
   }
 
   /**

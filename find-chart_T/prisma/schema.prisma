@@ -75,6 +75,8 @@ model Candle1m {
   volume   Float
 
   @@id([time, symbol])
+  // symbol로 먼저 필터링하고 time으로 정렬
+  @@index([symbol, time(sort: Desc)])
   @@index([category])
 }
 

@@ -8,7 +8,7 @@ interface ChartSettingsState {
 }
 
 export const useChartStore = create<ChartSettingsState>((set) => ({
-  timeframe: '1m',
+  timeframe: '1D',
   actions: {
     setTimeframe: (timeframe) => set({ timeframe }),
   },
