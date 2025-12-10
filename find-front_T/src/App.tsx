@@ -13,7 +13,11 @@ import Settings from './pages/Settings/Settings'
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+      }}
+    >
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route

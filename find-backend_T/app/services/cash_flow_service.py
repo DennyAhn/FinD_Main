@@ -33,7 +33,26 @@ async def fetch_company_cash_flows(
     limit: int = 5,
 ) -> Dict[str, Any]:
     """
-    [AI용 설명] 특정 티커(ticker)의 현금흐름표 데이터를 조회하여 DB에 저장하고 반환합니다.
+    현금흐름표(Cash Flow Statement) 데이터를 조회합니다.
+    
+    **Use this tool when user asks about:**
+    - 영업 현금 흐름 (Operating Cash Flow, OCF)
+    - 투자 현금 흐름 (Investing Cash Flow)
+    - 재무 현금 흐름 (Financing Cash Flow)
+    - 자본 지출 (CapEx, Capital Expenditure)
+    - 자유 현금 흐름 (Free Cash Flow, FCF) = OCF - CapEx
+    - 주식 매입 (Buyback, Share Repurchase)
+    - 배당금 지급 (Dividends Paid)
+    - 총 자본 배분 (Total Capital Allocation)
+    - 현금 창출 능력, FCF 마진, 주주 환원 정책
+    
+    **Parameters:**
+    - ticker: 종목 심볼 (예: "NVDA", "AAPL")
+    - period: "annual" (연간) 또는 "quarter" (분기)
+    - limit: 조회할 기간 수 (기본 5, 최대 12)
+    
+    **Returns:** Analysis result with widgets and detailed cash flow metrics including
+    OCF, ICF, FCF, CapEx, buyback, dividends, and comprehensive insights.
     
     period 파라미터:
     - "annual": 연간 데이터 (기본값, 최근 5개 연도)

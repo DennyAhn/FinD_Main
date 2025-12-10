@@ -19,21 +19,38 @@ def present_valuation(ticker: str, period: str, analysis: Dict[str, Any]) -> Ana
         badges=badges
     )
 
-    # --- 2. Build Metrics List ---
+    # --- 2. Build Metrics List (Wall Street Standard: YoY + Historical Avg) ---
     val_metrics = []
     
     # PER
     pe = metrics.get("pe")
     avg_pe = metrics.get("avg_pe")
+    pe_yoy_change = metrics.get("pe_ratio_yoy_change_pct")
+    pe_previous = metrics.get("pe_ratio_previous")
+    
     if pe:
-        comparison = f"vs 5yr Avg {avg_pe:.1f}x" if avg_pe else None
-        trend = "up" if avg_pe and pe > avg_pe else "down" if avg_pe and pe < avg_pe else "flat"
+        # Comparison: 5yr Avg + YoY Change
+        comparison_parts = []
+        if avg_pe:
+            comparison_parts.append(f"vs 5yr Avg {avg_pe:.1f}x")
+        if pe_yoy_change is not None and pe_previous:
+            change_symbol = "↑" if pe_yoy_change > 0 else "↓" if pe_yoy_change < 0 else "→"
+            comparison_parts.append(f"YoY {change_symbol}{abs(pe_yoy_change):.1f}% (전년 {pe_previous:.1f}x)")
+        
+        comparison = " | ".join(comparison_parts) if comparison_parts else None
+        
+        # Trend: YoY 기반 (더 정확)
+        if pe_yoy_change is not None:
+            trend = "down" if pe_yoy_change < -5 else "up" if pe_yoy_change > 5 else "flat"
+        else:
+            trend = "up" if avg_pe and pe > avg_pe else "down" if avg_pe and pe < avg_pe else "flat"
+        
         val_metrics.append(ValuationMetric(
             label="PER",
             value=f"{pe:.1f}x",
             comparison=comparison,
             trend=trend,
-            status="neutral" # TODO: logic
+            status="neutral"
         ))
 
     # Forward PER
@@ -50,24 +67,62 @@ def present_valuation(ticker: str, period: str, analysis: Dict[str, Any]) -> Ana
     # PEG
     peg = metrics.get("peg")
     avg_peg = metrics.get("avg_peg")
+    peg_yoy_change = metrics.get("peg_ratio_yoy_change_pct")
+    peg_previous = metrics.get("peg_ratio_previous")
+    
     if peg:
-        comparison = f"vs 5yr Avg {avg_peg:.2f}" if avg_peg else None
+        # Comparison: 5yr Avg + YoY Change
+        comparison_parts = []
+        if avg_peg:
+            comparison_parts.append(f"vs 5yr Avg {avg_peg:.2f}")
+        if peg_yoy_change is not None and peg_previous:
+            change_symbol = "↑" if peg_yoy_change > 0 else "↓" if peg_yoy_change < 0 else "→"
+            comparison_parts.append(f"YoY {change_symbol}{abs(peg_yoy_change):.1f}% (전년 {peg_previous:.2f})")
+        
+        comparison = " | ".join(comparison_parts) if comparison_parts else None
+        
+        # Trend: YoY 기반
+        if peg_yoy_change is not None:
+            trend = "down" if peg_yoy_change < -10 else "up" if peg_yoy_change > 10 else "flat"
+        else:
+            trend = "flat"
+        
         val_metrics.append(ValuationMetric(
             label="PEG",
             value=f"{peg:.2f}",
             comparison=comparison,
+            trend=trend,
             status="good" if peg < 1.0 else "bad" if peg > 2.0 else "neutral"
         ))
         
     # PBR
     pbr = metrics.get("pbr")
     avg_pbr = metrics.get("avg_pbr")
+    pbr_yoy_change = metrics.get("price_to_book_ratio_yoy_change_pct")
+    pbr_previous = metrics.get("price_to_book_ratio_previous")
+    
     if pbr:
-        comparison = f"vs 5yr Avg {avg_pbr:.1f}x" if avg_pbr else None
+        # Comparison: 5yr Avg + YoY Change
+        comparison_parts = []
+        if avg_pbr:
+            comparison_parts.append(f"vs 5yr Avg {avg_pbr:.1f}x")
+        if pbr_yoy_change is not None and pbr_previous:
+            change_symbol = "↑" if pbr_yoy_change > 0 else "↓" if pbr_yoy_change < 0 else "→"
+            comparison_parts.append(f"YoY {change_symbol}{abs(pbr_yoy_change):.1f}% (전년 {pbr_previous:.1f}x)")
+        
+        comparison = " | ".join(comparison_parts) if comparison_parts else None
+        
+        # Trend: YoY 기반
+        if pbr_yoy_change is not None:
+            trend = "down" if pbr_yoy_change < -5 else "up" if pbr_yoy_change > 5 else "flat"
+        else:
+            trend = "up" if avg_pbr and pbr > avg_pbr else "down" if avg_pbr and pbr < avg_pbr else "flat"
+        
         val_metrics.append(ValuationMetric(
             label="PBR",
             value=f"{pbr:.1f}x",
             comparison=comparison,
+            trend=trend,
             status="neutral"
         ))
 

@@ -21,7 +21,7 @@ export default function Layout({ children }: LayoutProps) {
           <main className="layout-content">{children}</main>
         </div>
       </div>
-      {isChatOpen && <AISidebar />}
+      <AISidebar isOpen={isChatOpen} />
     </div>
   )
 }

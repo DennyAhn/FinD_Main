@@ -98,6 +98,29 @@ async def run_mcp_agent(
             **Step 3: Answer (Synthesis & Insight)**
             - Action: Synthesize the *actual data* returned from Step 2 using the **"Fin:D Pro Analysis Framework"**.
             - **DO NOT** use your internal training data for specific numbers. Always use the Tool Output.
+            - **CRITICAL - Pre-Calculated YoY Changes (백엔드 계산 활용)**:
+              - Backend provides pre-calculated YoY changes in the data
+              - **DO NOT recalculate** - use the provided `*_yoy_change_pct` fields
+              - **Available fields in payload[0]**:
+                * `debt_to_equity_yoy_change_pct`: -28.5 (means -28.5% vs prior year)
+                * `pe_ratio_yoy_change_pct`: +5.4
+                * `return_on_equity_yoy_change_pct`: -8.2
+                * `debt_to_equity_previous`: 5.41 (prior year value)
+                * `avg_de`, `avg_pe`, `avg_pbr` (5-year averages)
+              
+              - **Response Format (Wall Street Standard)**:
+                ```
+                부채비율: 3.87 (전년 5.41 대비 -28.5% 개선)
+                * FY2025 (2025년 9월 기준)
+                * 5년 평균 4.95 대비 21.8% 낮은 수준으로, 자본 구조가 개선되고 있습니다.
+                ```
+              
+              - **Mandatory Elements (월스트리트 표준)**:
+                1. **Current value**: "3.87"
+                2. **Previous value**: "전년 5.41"
+                3. **YoY change**: "대비 -28.5% 개선" (use `*_yoy_change_pct`)
+                4. **Historical average**: "5년 평균 4.95" (use `avg_*`)
+                5. **Interpretation**: "자본 구조가 개선되고 있습니다"
             
             ### 2.3 Narrative Polish Rules (MANDATORY)
             
@@ -122,7 +145,40 @@ async def run_mcp_agent(
                  - "자사주 매입과 배당을 포함한 주주환원 규모" ✅ (Buyback + Div only)
                  - "주주환원에 $34.5B, 설비투자에 $3.2B 사용" ✅ (when breaking down)
             
-            4. **Professional Financial Report Format (전문 리포트 형식)**:
+            4. **Fiscal Year & Quarter Interpretation (회계연도 해석 규칙)**:
+               - **CRITICAL**: Report dates and fiscal quarters DO NOT match calendar quarters
+               - **Key Rules**:
+                 1. Fiscal Year (FY) ≠ Calendar Year
+                    - Example: Apple FY2025 = Oct 2024 ~ Sep 2025
+                 2. Quarter numbering follows FISCAL year, not calendar
+                    - Q1 FY2025 = Oct~Dec 2024 (ends 2024-12-28)
+                    - Q4 FY2025 = Jul~Sep 2025 (ends 2025-09-27)
+                 3. NEVER say "Q4 2025" for 2024-12-28 date
+                    - Correct: "Q1 FY2025 (2024년 12월 종료)"
+                    - Wrong: "Q4 2025" ❌
+               - **Response Format**:
+                 "Q1 FY2025 (2024년 12월 종료 분기)" or "FY2025 Q1 (Oct-Dec 2024)"
+            
+            6. **Debt-to-Equity Ratio Specification (부채비율 계산 기준 명시)**:
+               - **CRITICAL**: When mentioning D/E Ratio, ALWAYS clarify the calculation basis
+               - **Our System Uses**: Total Liabilities / Total Equity (총부채 기준)
+               - **MANDATORY Format**:
+                 ```
+                 부채비율: 0.545 (54.5%)
+                 * 계산 기준: 총부채(Total Liabilities) ÷ 자본총계
+                 * 총부채에는 유동부채(매입채무, 단기차입금 등)와 비유동부채(장기차입금 등)가 모두 포함됩니다.
+                 ```
+               - **Alternative Metrics to Mention** (if available):
+                 - 순차입금비율 = (장단기차입금 - 현금) / 자본 (이자부담부채 기준)
+                 - 차입금비율 = (장단기차입금) / 자본 (차입금만)
+               - **Why This Matters**: 
+                 - Total Liabilities 기준이 더 보수적 (안전성 평가에 유리)
+                 - 차입금만 보면 실제보다 낮게 나올 수 있음
+               - **Example Response**:
+                 "부채비율은 **54.5% (총부채 기준)**로, 이는 자본 대비 총부채 비율입니다. 
+                  매입채무 등 영업부채를 포함한 모든 부채를 반영하므로, 순차입금 기준보다 높게 산출됩니다."
+            
+            7. **Professional Financial Report Format (전문 리포트 형식)**:
                
                **Standard Output Template for Cash Flow Analysis:**
                ```

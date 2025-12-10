@@ -55,9 +55,13 @@ async def get_server_time():
     서버의 현재 시간을 반환합니다.
     클라이언트가 서버 시간과 동기화하기 위해 사용합니다.
     """
-    now = datetime.utcnow()
+    from datetime import timezone
+    # timezone-aware UTC datetime 사용
+    now = datetime.now(timezone.utc)
+    # UTC 기준 타임스탬프 (밀리초)
+    timestamp_ms = int(now.timestamp() * 1000)
     return {
-        "timestamp": int(now.timestamp() * 1000),  # 밀리초 단위
+        "timestamp": timestamp_ms,
         "iso": now.isoformat(),
         "utc": now.timestamp()
     }

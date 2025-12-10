@@ -96,25 +96,27 @@ export default function FinancialStatementsView({ ticker, initialSubTab = 'incom
       </div>
 
       <div className="financial-statements-widgets">
-        {(() => {
-          const insightCard = view.widgets.find((w) => w.type === 'insight_card')
-          const chart = view.widgets.find((w) => w.type === 'financial_chart')
-          const table = view.widgets.find((w) => w.type === 'financial_table')
+        <div key={`${activeSubTab}-${period}-${yearRange}`} className="tab-content-wrapper">
+          {(() => {
+            const insightCard = view.widgets.find((w) => w.type === 'insight_card')
+            const chart = view.widgets.find((w) => w.type === 'financial_chart')
+            const table = view.widgets.find((w) => w.type === 'financial_table')
 
-          return (
-            <>
-              {/* 인사이트 카드와 차트를 나란히 배치 */}
-              {(insightCard || chart) && (
-                <div className={`financial-insight-chart-wrapper ${!insightCard ? 'chart-only' : ''}`}>
-                  {insightCard && <InsightCard widget={insightCard} />}
-                  {chart && <FinancialChart widget={chart} />}
-                </div>
-              )}
-              {/* 테이블은 전체 너비로 배치 */}
-              {table && <FinancialTable widget={table} />}
-            </>
-          )
-        })()}
+            return (
+              <>
+                {/* 인사이트 카드와 차트를 나란히 배치 */}
+                {(insightCard || chart) && (
+                  <div className={`financial-insight-chart-wrapper ${!insightCard ? 'chart-only' : ''}`}>
+                    {insightCard && <InsightCard widget={insightCard} />}
+                    {chart && <FinancialChart widget={chart} />}
+                  </div>
+                )}
+                {/* 테이블은 전체 너비로 배치 */}
+                {table && <FinancialTable widget={table} />}
+              </>
+            )
+          })()}
+        </div>
       </div>
     </div>
   )

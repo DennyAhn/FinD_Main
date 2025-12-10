@@ -18,8 +18,15 @@ def analyze_cash_flow(data: Dict[str, Any]) -> Dict[str, Any]:
     
     # --- 1. Extract Metrics ---
     ocf = latest_cf.get("operating_cash_flow") or 0
-    fcf = latest_cf.get("free_cash_flow") or 0
     capex = abs(latest_cf.get("capital_expenditure") or 0)
+    
+    # [금융 전문가 검증] FCF 재계산 (FMP API 값이 없거나 잘못된 경우 방어)
+    fcf = latest_cf.get("free_cash_flow")
+    if fcf is None or fcf == 0:
+        fcf = ocf - capex  # FCF = OCF - CapEx (표준 공식)
+        print(f"[Cash Flow Analyzer] FCF recalculated: {ocf} - {capex} = {fcf}")
+    else:
+        fcf = float(fcf)
     
     # Capital Allocation
     buyback = abs(latest_cf.get("common_stock_repurchased") or 0)
@@ -54,9 +61,14 @@ def analyze_cash_flow(data: Dict[str, Any]) -> Dict[str, Any]:
             badges.append("Cash Cow")
             insights.append(f"매출의 {fcf_margin*100:.1f}%가 잉여현금으로 남는 고수익 구조입니다.")
 
-    # Shareholder Return
-    total_return = buyback + dividend
-    if total_return > 0:
+    # [금융 전문가 검증] 자본 배분 계산
+    # Shareholder Return = 주주 환원 (Buybacks + Dividends만)
+    shareholder_return = buyback + dividend
+    
+    # Total Capital Allocation = 총 자본 배분 (Buybacks + Dividends + CapEx)
+    total_capital_allocation = buyback + dividend + capex
+    
+    if shareholder_return > 0:
         score += 10
         badges.append("주주친화")
         insights.append("자사주 매입과 배당으로 주주 환원에 적극적입니다.")
@@ -85,6 +97,8 @@ def analyze_cash_flow(data: Dict[str, Any]) -> Dict[str, Any]:
             "capex": capex,
             "buyback": buyback,
             "dividend": dividend,
+            "shareholder_return": shareholder_return,  # 주주 환원 = Buyback + Dividend
+            "total_capital_allocation": total_capital_allocation,  # 총 자본 배분 = Buyback + Dividend + CapEx
             "sbc": sbc,
             "net_income": net_income,
             "revenue": revenue

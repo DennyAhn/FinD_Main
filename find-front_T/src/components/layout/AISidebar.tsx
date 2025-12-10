@@ -195,7 +195,11 @@ const SearchIcon = ({ className, style }: { className?: string; style?: React.CS
   </svg>
 )
 
-export default function AISidebar() {
+interface AISidebarProps {
+  isOpen: boolean
+}
+
+export default function AISidebar({ isOpen }: AISidebarProps) {
   const { ticker } = useParams<{ ticker?: string }>()
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
@@ -258,6 +262,7 @@ export default function AISidebar() {
 
   const [width, setWidth] = useState(400)
   const [isResizing, setIsResizing] = useState(false)
+  const isResizingRef = useRef(false)
   const [selectedModel, setSelectedModel] = useState<'basic' | 'premium'>('basic')
   const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false)
   const sidebarRef = useRef<HTMLDivElement>(null)
@@ -280,38 +285,55 @@ export default function AISidebar() {
     }
   }, [isModelDropdownOpen])
 
-  const startResizing = useCallback(() => {
+  const startResizing = useCallback((e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
     setIsResizing(true)
+    isResizingRef.current = true
+    // 텍스트 선택 방지
+    document.body.style.userSelect = 'none'
+    document.body.style.cursor = 'ew-resize'
   }, [])
 
   const stopResizing = useCallback(() => {
     setIsResizing(false)
+    isResizingRef.current = false
+    // 텍스트 선택 복원
+    document.body.style.userSelect = ''
+    document.body.style.cursor = ''
   }, [])
 
-  const resize = useCallback(
-    (mouseMoveEvent: MouseEvent) => {
-      if (isResizing) {
-        const newWidth = window.innerWidth - mouseMoveEvent.clientX
-        if (newWidth > 280 && newWidth < 800) {
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isResizingRef.current) {
+        e.preventDefault()
+        const newWidth = window.innerWidth - e.clientX
+        if (newWidth >= 280 && newWidth <= 800) {
           setWidth(newWidth)
         }
       }
-    },
-    [isResizing]
-  )
-
-  useEffect(() => {
-    window.addEventListener('mousemove', resize)
-    window.addEventListener('mouseup', stopResizing)
-    return () => {
-      window.removeEventListener('mousemove', resize)
-      window.removeEventListener('mouseup', stopResizing)
     }
-  }, [resize, stopResizing])
+
+    const handleMouseUp = () => {
+      if (isResizingRef.current) {
+        stopResizing()
+      }
+    }
+
+    if (isResizing) {
+      window.addEventListener('mousemove', handleMouseMove, { passive: false })
+      window.addEventListener('mouseup', handleMouseUp)
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [isResizing, stopResizing])
 
   return (
     <aside
-      className="ai-sidebar"
+      className={`ai-sidebar ${!isOpen ? 'ai-sidebar-hidden' : ''} ${isResizing ? 'resizing' : ''}`}
       style={{ width: `${width}px` }}
       ref={sidebarRef}
     >

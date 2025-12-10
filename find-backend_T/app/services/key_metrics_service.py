@@ -72,7 +72,9 @@ async def fetch_company_key_metrics(
 
     if limit:
         limit = int(limit)
-    limit = max(1, min(limit, 8))
+    # [FIX] Quarter는 더 많은 데이터 필요 (5년 × 4분기 = 20개)
+    max_limit = 20 if normalized_period == "quarter" else 8
+    limit = max(1, min(limit, max_limit))
 
     # --- 0. 프로필 보강 [수정됨] ---
     # profile_service가 commit을 하므로, 우리는 DB에서 조회만 합니다.
@@ -223,10 +225,42 @@ async def fetch_company_key_metrics(
                     # --- 필드 매핑 및 데이터 정제 ---
                     
                     # 1. Valuation Ratios
-                    pe_ratio = _get_metric(
+                    # [중요] 현재 주가와 주식 수 먼저 가져오기 (계산에 필요)
+                    current_price = _get_metric(quote_data.get("price"))
+                    shares_outstanding = _get_metric(
+                        quote_data.get("sharesOutstanding"),
+                        payload.get("numberOfShares")
+                    )
+                    
+                    # [FIX] PER - 직접 계산 우선 (FMP 값은 주가 타이밍 불일치 가능)
+                    pe_ratio_fmp = _get_metric(
                         payload.get("peRatio"), 
                         payload.get("priceEarningsRatio")
                     )
+                    
+                    # TTM EPS (더 최신 데이터)
+                    current_eps = _get_metric(
+                        quote_data.get("eps"),  # TTM EPS (우선순위 높음)
+                        payload.get("netIncomePerShare")
+                    )
+                    
+                    pe_ratio = None
+                    if current_price and current_eps and current_eps > 0:
+                        # 직접 계산: PER = Price / EPS
+                        pe_ratio = current_price / current_eps
+                        
+                        if pe_ratio_fmp:
+                            diff_pct = abs((pe_ratio - pe_ratio_fmp) / pe_ratio_fmp * 100)
+                            if diff_pct > 10:
+                                print(f"[PER Warning] {ticker} {report_date}: Calculated {pe_ratio:.2f} vs FMP {pe_ratio_fmp:.2f} (Diff {diff_pct:.1f}%)")
+                                print(f"  - Price: ${current_price:.2f}, EPS: ${current_eps:.2f}")
+                        else:
+                            print(f"[PER Calculated] {ticker} {report_date}: {pe_ratio:.2f} (Price ${current_price:.2f} / EPS ${current_eps:.2f})")
+                    else:
+                        # Fallback: FMP 값 사용
+                        pe_ratio = pe_ratio_fmp
+                        if pe_ratio:
+                            print(f"[PER Fallback] {ticker} {report_date}: Using FMP {pe_ratio:.2f} (Missing Price or EPS)")
                     
                     # [NEW] Forward PE & PEG 계산
                     forward_pe = _get_metric(
@@ -239,11 +273,6 @@ async def fetch_company_key_metrics(
                         payload.get("pegRatio"),
                         payload.get("pegRatioTTM"),
                     )
-
-                    # 계산 로직: 데이터가 없고 최신 연도인 경우
-                    
-                    # 현재 주가
-                    current_price = _get_metric(quote_data.get("price"))
                     
                     # [수정] 정확한 연도 매칭을 통한 예상 EPS 조회
                     # Forward PE는 통상 '다음 회계연도' 기준
@@ -287,11 +316,49 @@ async def fetch_company_key_metrics(
                         payload.get("priceToSalesRatio"),
                         payload.get("priceToSalesRatioTTM"),
                     )
-                    price_to_book_ratio = _get_metric(
+                    
+                    # [FIX] PBR - Balance Sheet에서 직접 계산 (FMP 값은 Equity 부정확)
+                    # PBR = Price / Book Value Per Share
+                    # Book Value Per Share = Total Equity / Shares Outstanding
+                    price_to_book_ratio_fmp = _get_metric(
                         payload.get("priceToBookRatio"),
                         payload.get("priceBookValueRatio"),
                         payload.get("pbRatio"),
                     )
+                    
+                    price_to_book_ratio = None
+                    # D/E Ratio 계산에서 이미 Balance Sheet를 가져왔으므로 재사용
+                    try:
+                        balance_sheet = db.query(models.CompanyBalanceSheet).filter_by(
+                            ticker=ticker,
+                            period=normalized_period,
+                            report_date=report_date
+                        ).first()
+                        
+                        if balance_sheet and balance_sheet.total_equity and shares_outstanding and current_price:
+                            # Book Value Per Share 계산
+                            book_value_per_share = balance_sheet.total_equity / shares_outstanding
+                            
+                            # PBR 계산
+                            if book_value_per_share > 0:
+                                price_to_book_ratio = current_price / book_value_per_share
+                                
+                                if price_to_book_ratio_fmp:
+                                    diff_pct = abs((price_to_book_ratio - price_to_book_ratio_fmp) / price_to_book_ratio_fmp * 100)
+                                    if diff_pct > 10:
+                                        print(f"[PBR Warning] {ticker} {report_date}: Calculated {price_to_book_ratio:.2f} vs FMP {price_to_book_ratio_fmp:.2f} (Diff {diff_pct:.1f}%)")
+                                        print(f"  - Price: ${current_price:.2f}, BPS: ${book_value_per_share:.2f} (Equity: ${balance_sheet.total_equity:.2f}B / Shares: {shares_outstanding:.2f}B)")
+                                else:
+                                    print(f"[PBR Calculated] {ticker} {report_date}: {price_to_book_ratio:.2f} (Price ${current_price:.2f} / BPS ${book_value_per_share:.2f})")
+                        else:
+                            # Fallback: FMP 값 사용
+                            price_to_book_ratio = price_to_book_ratio_fmp
+                            if price_to_book_ratio:
+                                print(f"[PBR Fallback] {ticker} {report_date}: Using FMP {price_to_book_ratio:.2f} (Missing Balance Sheet or Shares)")
+                    except Exception as e:
+                        print(f"[PBR Error] {ticker} {report_date}: {e}")
+                        price_to_book_ratio = price_to_book_ratio_fmp
+                    
                     enterprise_value_to_ebitda = _get_metric(
                         payload.get("enterpriseValueOverEBITDA"),
                         payload.get("enterpriseValueEbitdaRatio"),
@@ -309,15 +376,130 @@ async def fetch_company_key_metrics(
                     )
                     
                     # 3. Liquidity & Health
-                    debt_to_equity = _get_metric(
-                        payload.get("debtToEquity"),
-                        payload.get("debtEquityRatio"),
-                        payload.get("debtEquityTTM"),
-                    )
-                    current_ratio = _get_metric(
-                        payload.get("currentRatio"), 
-                        payload.get("currentRatioTTM")
-                    )
+                    # [FIX] D/E Ratio - Balance Sheet에서 직접 계산 (FMP 값은 부정확)
+                    # 
+                    # [중요] 부채비율 계산 기준:
+                    # - 총부채 기준 (Total Liabilities / Total Equity)
+                    # - 유동부채 + 비유동부채 (매입채무, 차입금, 미지급금 등 모든 부채 포함)
+                    # - 이자부담부채(차입금)만 계산하는 방식과는 다름
+                    debt_to_equity = None
+                    
+                    # Balance Sheet에서 Total Liabilities / Total Equity 계산
+                    try:
+                        balance_sheet = db.query(models.CompanyBalanceSheet).filter_by(
+                            ticker=ticker,
+                            period=normalized_period,
+                            report_date=report_date
+                        ).first()
+                        
+                        # [FIX] Balance Sheet가 없거나 Equity 데이터가 없으면 자동으로 fetch
+                        need_fetch = False
+                        if not balance_sheet:
+                            need_fetch = True
+                            print(f"[D/E] Balance Sheet not found for {ticker} {report_date}, fetching from API...")
+                        elif not balance_sheet.total_equity or balance_sheet.total_equity == 0:
+                            need_fetch = True
+                            print(f"[D/E] Balance Sheet exists but Equity is missing for {ticker} {report_date}, re-fetching...")
+                        
+                        if need_fetch:
+                            from app.services.balance_sheet_service import fetch_company_balance_sheets
+                            try:
+                                # Balance Sheet 가져오기 (같은 period로)
+                                # fetch_company_balance_sheets 내부에서 이미 commit하므로 여기서는 commit 불필요
+                                await fetch_company_balance_sheets(ticker, db, client, normalized_period, limit=5)
+                                
+                                # 다시 조회
+                                balance_sheet = db.query(models.CompanyBalanceSheet).filter_by(
+                                    ticker=ticker,
+                                    period=normalized_period,
+                                    report_date=report_date
+                                ).first()
+                                
+                                if balance_sheet and balance_sheet.total_equity:
+                                    print(f"[D/E] Balance Sheet fetched successfully for {ticker} {report_date}")
+                                else:
+                                    print(f"[D/E] Balance Sheet still missing Equity after fetch for {ticker} {report_date}")
+                            except Exception as fetch_error:
+                                print(f"[D/E] Failed to fetch Balance Sheet: {fetch_error}")
+                                # 에러 발생 시 세션 롤백하여 다음 처리 가능하도록
+                                db.rollback()
+                        
+                        if balance_sheet:
+                            total_liabilities = balance_sheet.total_liabilities
+                            total_equity = balance_sheet.total_equity
+                            
+                            # D/E = Total Liabilities / Total Equity (총부채 기준)
+                            # [금융 전문가 검증] 음의 자기자본 처리
+                            if total_equity and total_liabilities is not None:
+                                if total_equity > 0:
+                                    debt_to_equity = total_liabilities / total_equity
+                                elif total_equity < 0:
+                                    # 음의 자기자본: 부채가 자산을 초과 (재무 위기 신호)
+                                    debt_to_equity = None  # 의미 없는 값이므로 None 처리
+                                    print(f"[D/E Warning] {ticker} {report_date}: Negative Equity ({total_equity}B) - 부채가 자산 초과!")
+                                else:  # total_equity == 0
+                                    debt_to_equity = None
+                                    print(f"[D/E Warning] {ticker} {report_date}: Zero Equity - D/E 계산 불가")
+                                
+                                # [추가 정보] 차입금 기준 부채비율도 계산 (참고용)
+                                long_term_debt = balance_sheet.long_term_debt or 0
+                                short_term_debt = balance_sheet.short_term_debt or 0
+                                total_debt = long_term_debt + short_term_debt
+                                debt_only_ratio = total_debt / total_equity if total_debt > 0 else 0
+                                
+                                print(f"[D/E Calculated] {ticker} {report_date}:")
+                                print(f"  - 총부채 기준: {total_liabilities:.2f}B / {total_equity:.2f}B = {debt_to_equity:.4f} (Total Liabilities)")
+                                print(f"  - 차입금 기준: {total_debt:.2f}B / {total_equity:.2f}B = {debt_only_ratio:.4f} (Interest-Bearing Debt Only)")
+                            else:
+                                print(f"[D/E Warning] {ticker} {report_date}: Equity is zero or missing")
+                        else:
+                            # Fallback: FMP API 값 (신뢰도 낮음)
+                            debt_to_equity = _get_metric(
+                                payload.get("debtToEquity"),
+                                payload.get("debtEquityRatio"),
+                                payload.get("debtEquityTTM"),
+                            )
+                            if debt_to_equity:
+                                print(f"[D/E Fallback] {ticker} {report_date}: Using FMP value {debt_to_equity:.4f} (BS not found)")
+                    except Exception as e:
+                        print(f"[D/E Error] {ticker} {report_date}: {e}")
+                        # Final Fallback
+                        debt_to_equity = _get_metric(
+                            payload.get("debtToEquity"),
+                            payload.get("debtEquityRatio"),
+                            payload.get("debtEquityTTM"),
+                        )
+                    
+                    # [FIX] Current Ratio - Balance Sheet에서 직접 계산
+                    current_ratio = None
+                    
+                    try:
+                        if balance_sheet:
+                            current_assets = balance_sheet.total_current_assets
+                            current_liabilities = balance_sheet.total_current_liabilities
+                            
+                            # Current Ratio = Current Assets / Current Liabilities
+                            if current_liabilities and current_liabilities > 0 and current_assets is not None:
+                                current_ratio = current_assets / current_liabilities
+                                print(f"[CR Calculated] {ticker} {report_date}: {current_assets:.2f}B / {current_liabilities:.2f}B = {current_ratio:.4f}")
+                            else:
+                                # Fallback: FMP API 값
+                                current_ratio = _get_metric(
+                                    payload.get("currentRatio"), 
+                                    payload.get("currentRatioTTM")
+                                )
+                        else:
+                            # Fallback: FMP API 값
+                            current_ratio = _get_metric(
+                                payload.get("currentRatio"), 
+                                payload.get("currentRatioTTM")
+                            )
+                    except Exception as e:
+                        print(f"[CR Error] {ticker} {report_date}: {e}")
+                        current_ratio = _get_metric(
+                            payload.get("currentRatio"), 
+                            payload.get("currentRatioTTM")
+                        )
                     
                     # 4. Per Share Metrics
                     revenue_per_share = _get_metric(payload.get("revenuePerShare"))
@@ -354,6 +536,9 @@ async def fetch_company_key_metrics(
                         existing_record.return_on_assets = return_on_assets
                         existing_record.debt_to_equity = debt_to_equity
                         existing_record.current_ratio = current_ratio
+                        de_str = f"{debt_to_equity:.4f}" if debt_to_equity is not None else "None"
+                        cr_str = f"{current_ratio:.4f}" if current_ratio is not None else "None"
+                        print(f"[Key Metrics] Updated {ticker} {report_date}: D/E={de_str}, CR={cr_str}")
                         existing_record.dividend_yield = dividend_yield
                         existing_record.book_value_per_share = book_value_per_share
                         existing_record.free_cash_flow_per_share = free_cash_flow_per_share
@@ -388,6 +573,9 @@ async def fetch_company_key_metrics(
                             price_to_sales_ratio=price_to_sales_ratio,
                         )
                         db.add(new_record)
+                        de_str = f"{debt_to_equity:.4f}" if debt_to_equity is not None else "None"
+                        cr_str = f"{current_ratio:.4f}" if current_ratio is not None else "None"
+                        print(f"[Key Metrics] Created {ticker} {report_date}: D/E={de_str}, CR={cr_str}")
                 except Exception as e:
                     print(f"[Error] Failed to process key metrics record for {ticker} ({date_str}): {e}")
                     continue
@@ -395,6 +583,9 @@ async def fetch_company_key_metrics(
             # 변경사항 커밋
             if cache_enabled:
                 db.commit()  # key_metrics 데이터를 DB에 확정
+                print(f"[Key Metrics] DB commit successful for {ticker} ({len(merged_data)} records)")
+            else:
+                print(f"[Key Metrics] Skipped DB save (cache_enabled=False) for {ticker}")
         except Exception as e:
             db.rollback()
             print(f"fetch_company_key_metrics API/DB 에러: {e}")
@@ -489,32 +680,74 @@ async def fetch_company_key_metrics(
         }
 
     # --- 5. [NEW] Calculate 5-Year Averages (For Valuation Context) ---
+    # 전체 데이터로 평균 계산 (5개 사용)
     avg_metrics = {}
     if len(payload) >= 3: # 최소 3년치 데이터는 있어야 평균 의미 있음
         # 평균을 구할 지표들 (음수 제외, 0보다 큰 값만)
-        keys_to_avg = ["pe_ratio", "price_to_book_ratio", "peg_ratio", "price_to_sales_ratio"]
+        keys_to_avg = ["pe_ratio", "price_to_book_ratio", "peg_ratio", "price_to_sales_ratio", "debt_to_equity"]
         
         for key in keys_to_avg:
             # 이상치(Outlier) 제거: PER > 500 등은 제외할 수도 있으나 일단 단순 평균
             values = [p[key] for p in payload if p.get(key) is not None and p[key] > 0]
             if values:
-                avg_key = key.replace("_ratio", "") # pe_ratio -> avg_pe
+                avg_key = key.replace("_ratio", "").replace("_", "") # debt_to_equity -> avg_de
                 if key == "pe_ratio": avg_key = "avg_pe"
                 elif key == "peg_ratio": avg_key = "avg_peg"
                 elif key == "price_to_book_ratio": avg_key = "avg_pbr"
+                elif key == "debt_to_equity": avg_key = "avg_de"
                 
                 avg_metrics[avg_key] = sum(values) / len(values)
     
-    # payload[0] (최신 데이터)에 평균값 주입 (Analyzer가 쓸 수 있게)
-    if payload:
-        payload[0].update(avg_metrics)
+    # [전문가 최적화] AI에게는 최신 2개 + 평균값만 전달 (Token 절약 & 명확성)
+    # payload_full: 전체 데이터 (5개) - 백엔드 내부 사용 및 위젯용
+    # payload_for_ai: AI 응답용 (최신 2개만)
+    payload_full = payload.copy()
+    payload_for_ai = payload[:2] if len(payload) >= 2 else payload
+    
+    # 최신 데이터에 평균값 주입 (AI가 비교 분석 가능하도록)
+    if payload_for_ai:
+        payload_for_ai[0].update(avg_metrics)
+        
+        # [Wall Street Standard] YoY 변화율 계산 (백엔드에서)
+        if len(payload_for_ai) >= 2:
+            current = payload_for_ai[0]
+            previous = payload_for_ai[1]
+            yoy_changes = {}
+            
+            # 주요 지표의 YoY 변화율 계산
+            metrics_to_compare = [
+                "debt_to_equity",
+                "current_ratio", 
+                "pe_ratio",
+                "price_to_book_ratio",
+                "return_on_equity",
+                "return_on_assets",
+                "peg_ratio"
+            ]
+            
+            for metric in metrics_to_compare:
+                curr_val = current.get(metric)
+                prev_val = previous.get(metric)
+                
+                if curr_val is not None and prev_val is not None and prev_val != 0:
+                    # 변화율 계산: (Current - Previous) / Previous * 100
+                    change_pct = ((curr_val - prev_val) / abs(prev_val)) * 100
+                    yoy_changes[f"{metric}_yoy_change_pct"] = round(change_pct, 2)
+                    yoy_changes[f"{metric}_previous"] = prev_val
+            
+            # 최신 데이터에 변화율 주입
+            payload_for_ai[0].update(yoy_changes)
+            print(f"[Key Metrics] AI에게 전달: {len(payload_for_ai)}개 데이터 (최신 + 전년), 평균값 + YoY 변화율 포함")
+            print(f"[YoY Changes] D/E: {yoy_changes.get('debt_to_equity_yoy_change_pct', 'N/A')}%, PE: {yoy_changes.get('pe_ratio_yoy_change_pct', 'N/A')}%")
+        else:
+            print(f"[Key Metrics] AI에게 전달: {len(payload_for_ai)}개 데이터 (최신만), 평균값 포함")
 
     # --- 6. Server-Driven UI Framework Integration ---
     from app.services.analyzers.valuation_analyzer import analyze_valuation
     from app.services.presenters.valuation_presenter import present_valuation
 
-    # 1) Analyze
-    analysis = analyze_valuation({"metrics": payload})
+    # 1) Analyze (전체 데이터 사용 - 평균 계산 등에 필요)
+    analysis = analyze_valuation({"metrics": payload_full})
     
     # 2) Present (Generate Widgets)
     # AnalysisResult 객체 생성
@@ -523,7 +756,10 @@ async def fetch_company_key_metrics(
     # 3) Convert to Dict (for MCP Service)
     # Pydantic 모델을 dict로 변환하여 반환
     final_result = result_obj.model_dump()
-    final_result["records"] = payload
+    
+    # [전문가 최적화] AI에게는 최신 2개만 전달 (비교 분석용)
+    final_result["records"] = payload_for_ai
+    final_result["history"] = payload_full  # 위젯/차트용으로 전체 데이터 포함
     return final_result
 
 

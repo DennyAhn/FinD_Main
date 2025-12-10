@@ -105,3 +105,13 @@ def get_current_user(
         
     # 7. 유효한 유저 정보를 반환
     return user
+
+# 현재 사용자 정보 조회 엔드포인트
+@router.get("/me", response_model=schemas.User)
+def get_current_user_info(
+    current_user: models.User = Depends(get_current_user)
+):
+    """
+    현재 로그인한 사용자의 정보를 반환합니다.
+    """
+    return current_user

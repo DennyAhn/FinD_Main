@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { companyApi } from '@/services/api/company'
 import { searchApi } from '@/services/api/search'
 import { useMarketStore } from '@/store/useMarketStore'
+import { isUSMarketOpen } from '@/utils/marketHours'
 import type { Company, StockQuote, FinancialMetric, AnalystCardWidget, MetricsGridWidget } from '@/types'
 import { useAllCompanies } from '@/hooks/useAllCompanies'
 import { COMPANY_DETAIL_TABS } from '@/constants'
@@ -90,6 +91,12 @@ export default function CompanyDetail() {
     return () => window.removeEventListener('keydown', handleEscKey)
   }, [navigate])
 
+  // ticker가 변경될 때마다 항상 'overview' 탭으로 리셋
+  useEffect(() => {
+    setActiveTab('overview')
+  }, [ticker])
+
+  // 초기 데이터 로드
   useEffect(() => {
     if (!ticker) {
       setDetailLoading(false)
@@ -122,6 +129,67 @@ export default function CompanyDetail() {
       setDetailLoading(false)
     })
   }, [ticker])
+
+  // 실시간 주가 업데이트 (장 중에만)
+  useEffect(() => {
+    if (!ticker || detailLoading || !quote) return
+
+    // 주가 새로고침 함수
+    const refreshQuote = async () => {
+      try {
+        const quoteData = await companyApi.getQuote(ticker)
+        if (quoteData) {
+          setQuote(quoteData)
+          console.log(`[기업 세부] ${ticker} 주가 갱신: $${quoteData.price.toFixed(2)}`)
+        }
+      } catch (err) {
+        console.error(`[기업 세부] ${ticker} 주가 업데이트 실패:`, err)
+      }
+    }
+
+    // 마켓 상태 체크 함수
+    const checkMarketStatus = () => {
+      const status = isUSMarketOpen()
+      return status.isOpen
+    }
+
+    // 초기 상태 체크
+    const isOpen = checkMarketStatus()
+
+    let quoteInterval: ReturnType<typeof setInterval> | null = null
+    let statusInterval: ReturnType<typeof setInterval> | null = null
+
+    if (isOpen) {
+      // 장 중: 30초마다 주가 업데이트
+      quoteInterval = setInterval(refreshQuote, 30000)
+      console.log(`[기업 세부] ${ticker} 실시간 업데이트 시작 (30초 주기)`)
+    }
+
+    // 1분마다 마켓 상태 체크 (장 오픈/마감 감지)
+    statusInterval = setInterval(() => {
+      const newStatus = checkMarketStatus()
+      
+      // 장이 열렸을 때: 업데이트 시작
+      if (newStatus && !quoteInterval) {
+        quoteInterval = setInterval(refreshQuote, 30000)
+        refreshQuote() // 즉시 1회 업데이트
+        console.log(`[기업 세부] ${ticker} 장 오픈 - 실시간 업데이트 시작`)
+      }
+      
+      // 장이 닫혔을 때: 업데이트 중단
+      if (!newStatus && quoteInterval) {
+        clearInterval(quoteInterval)
+        quoteInterval = null
+        console.log(`[기업 세부] ${ticker} 장 마감 - 실시간 업데이트 중단`)
+      }
+    }, 60000) // 1분마다
+
+    // Cleanup
+    return () => {
+      if (quoteInterval) clearInterval(quoteInterval)
+      if (statusInterval) clearInterval(statusInterval)
+    }
+  }, [ticker, detailLoading, quote])
 
   const handleSearch = useCallback(async () => {
     if (!searchQuery.trim()) return
@@ -470,7 +538,8 @@ export default function CompanyDetail() {
 
       <div className="company-content">
         {activeTab === 'overview' && (
-          <>
+          <div key="overview-tab" className="tab-content-wrapper">
+            <>
             <section className="hero-section">
               <div className="health-score-container">
                 <h2 className="health-score-title">재무 건전성 분석</h2>
@@ -622,30 +691,39 @@ export default function CompanyDetail() {
                 )}
               </section>
             </div>
-          </>
+            </>
+          </div>
         )}
 
         {activeTab === 'chart' && (
-          <div className="chart-tab-content">
-            <AdvancedChartWidget symbol={ticker} />
+          <div key="chart-tab" className="tab-content-wrapper">
+            <div className="chart-tab-content">
+              <AdvancedChartWidget symbol={ticker} />
+            </div>
           </div>
         )}
 
         {activeTab === 'financials' && ticker && (
-          <FinancialStatementsView ticker={ticker} />
+          <div key="financials-tab" className="tab-content-wrapper">
+            <FinancialStatementsView ticker={ticker} />
+          </div>
         )}
 
         {activeTab === 'news' && (
-          <div className="tab-placeholder">
-            <h2>📰 뉴스</h2>
-            <p>최신 뉴스 목록 (추후 구현)</p>
+          <div key="news-tab" className="tab-content-wrapper">
+            <div className="tab-placeholder">
+              <h2>📰 뉴스</h2>
+              <p>최신 뉴스 목록 (추후 구현)</p>
+            </div>
           </div>
         )}
 
         {activeTab === 'analysis' && (
-          <div className="tab-placeholder">
-            <h2>📊 투자의견</h2>
-            <p>상세 애널리스트 분석 (추후 구현)</p>
+          <div key="analysis-tab" className="tab-content-wrapper">
+            <div className="tab-placeholder">
+              <h2>📊 투자의견</h2>
+              <p>상세 애널리스트 분석 (추후 구현)</p>
+            </div>
           </div>
         )}
       </div>

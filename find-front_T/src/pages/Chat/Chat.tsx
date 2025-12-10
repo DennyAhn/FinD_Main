@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { chatApi } from '@/services/api/chat'
 import type { ChatMessage } from '@/types'
 import WidgetRenderer from '@/components/widgets/WidgetRenderer'
+import SimpleMarkdown from '@/components/common/SimpleMarkdown'
 import './Chat.css'
 
 export default function Chat() {
@@ -67,7 +68,7 @@ export default function Chat() {
         {messages.map((msg, idx) => (
           <div key={idx} className={`chat-message ${msg.role}`}>
             <div className="chat-message-content">
-              {msg.content}
+              <SimpleMarkdown>{msg.content}</SimpleMarkdown>
               {/* 위젯 렌더링 */}
               {msg.widgets && msg.widgets.length > 0 && (
                 <div className="chat-widgets">

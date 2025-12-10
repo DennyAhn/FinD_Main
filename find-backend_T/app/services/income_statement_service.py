@@ -32,7 +32,27 @@ async def fetch_company_income_statements(
     period: str = "annual",
     limit: int = 5,
 ) -> List[Dict[str, Any]]:
-    """FMP API에서 손익계산서를 조회하여 DB에 저장하고 반환합니다."""
+    """
+    손익계산서(Income Statement) 데이터를 조회합니다.
+    
+    **Use this tool when user asks about:**
+    - 매출 (Revenue, Sales)
+    - 매출원가 (COGS, Cost of Revenue)
+    - 총이익 (Gross Profit) = 매출 - 매출원가
+    - 영업이익 (Operating Income)
+    - 당기순이익 (Net Income)
+    - EPS (Earnings Per Share, 주당순이익)
+    - 영업이익률, 순이익률, Gross Margin 등 수익성 지표
+    - 과거 분기/연간 실적 비교 ("최근 3분기 매출 추이", "작년 대비 순이익 증가율")
+    
+    **Parameters:**
+    - ticker: 종목 심볼 (예: "NVDA", "AAPL")
+    - period: "annual" (연간) 또는 "quarter" (분기)
+    - limit: 조회할 기간 수 (기본 5, 최대 12)
+    
+    **Returns:** List of income statements with revenue, cost_of_revenue, gross_profit, 
+    operating_income, net_income, eps, ebitda, etc.
+    """
 
     normalized_period = (period or "annual").lower()
     if normalized_period == "quarterly":
@@ -40,6 +60,8 @@ async def fetch_company_income_statements(
     if normalized_period not in {"annual", "quarter"}:
         raise ValueError("period 값은 'annual' 또는 'quarter'만 지원합니다.")
 
+    # [FIX] Ensure limit is integer (AI may pass string from tool call)
+    limit = int(limit) if limit else 5
     limit = max(1, min(limit, 12))
 
     latest_record = (
