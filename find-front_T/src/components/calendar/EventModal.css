@@ -1,0 +1,130 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.modal-content {
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 18px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  color: #fff;
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.modal-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-event-item {
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  padding: 16px;
+  border-left: 4px solid #555;
+}
+
+.modal-event-item.earnings { border-left-color: #4caf50; } /* Green for earnings usually implies money, but user asked for random. We'll stick to a base color here and override in inline styles if needed, or just keep distinct types */
+.modal-event-item.economic { border-left-color: #ff5252; background-color: rgba(255, 82, 82, 0.1); } /* Red for Fed */
+.modal-event-item.conference { border-left-color: #2196f3; }
+.modal-event-item.dividend { border-left-color: #ff9800; }
+
+.event-time {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.event-title {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.company-symbol {
+  background-color: #333;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ddd;
+}
+
+.event-description {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.4;
+}
+
+.event-type-tag {
+  display: inline-block;
+  font-size: 10px;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #888;
+}
+
+.no-events {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}
