@@ -8,140 +8,587 @@
   padding: 24px;
   position: relative;
   z-index: 1;
+  overflow: hidden;
+}
+
+/* Animated Background Gradient */
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 70% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%);
+  animation: pulseGradient 10s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulseGradient {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+    opacity: 0.8;
+  }
 }
 
 .login-card {
   width: 100%;
-  max-width: 440px;
-  background-color: #16181d;
-  border: 1px solid var(--color-border, #2d3139);
-  border-radius: 12px;
-  padding: 40px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  max-width: 460px;
+  background: linear-gradient(135deg, rgba(22, 24, 29, 0.95) 0%, rgba(16, 18, 23, 0.98) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: 20px;
+  padding: 48px 40px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(99, 102, 241, 0.1) inset;
   position: relative;
   z-index: 2;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .login-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 36px;
+}
+
+/* Logo + Brand Section */
+.login-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.login-logo-image {
+  width: auto;
+  height: 56px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 16px rgba(99, 102, 241, 0.5));
+  animation: logoFloat 3s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.login-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
 }
 
 .login-logo {
   font-size: 36px;
-  font-weight: 700;
-  color: var(--color-text, #e8e9ed);
-  margin-bottom: 8px;
-  letter-spacing: -1px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 12px rgba(99, 102, 241, 0.4);
+  line-height: 1;
+}
+
+.login-tagline {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(99, 102, 241, 0.85);
+  margin: 0;
+  text-shadow: 0 1px 4px rgba(99, 102, 241, 0.3);
+  line-height: 1;
 }
 
 .login-subtitle {
-  color: var(--color-text-secondary, #6b7280);
-  font-size: 14px;
+  background: linear-gradient(90deg, 
+    rgba(167, 139, 250, 0.95) 0%, 
+    rgba(99, 102, 241, 0.95) 25%,
+    rgba(167, 139, 250, 0.95) 50%,
+    rgba(99, 102, 241, 0.95) 75%,
+    rgba(167, 139, 250, 0.95) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0.5px;
+  animation: subtitleShimmer 3s ease-in-out infinite, 
+             subtitleFadeIn 0.8s ease-out,
+             subtitleFadePulse 3s ease-in-out 0.8s infinite;
+  transform-origin: center;
+}
+
+@keyframes subtitleShimmer {
+  0% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+  100% {
+    background-position: 0% center;
+  }
+}
+
+@keyframes subtitleFadePulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes subtitleFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .login-tabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 24px;
-  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 28px;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+  position: relative;
 }
 
 .login-tab {
   flex: 1;
-  padding: 12px;
+  padding: 14px 12px;
   background: none;
   border: none;
-  color: var(--color-text-secondary);
+  color: rgba(156, 163, 175, 0.7);
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
-  border-bottom: 2px solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-bottom: 3px solid transparent;
   margin-bottom: -1px;
+  position: relative;
 }
 
 .login-tab:hover {
-  color: var(--color-text);
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(99, 102, 241, 0.05);
 }
 
 .login-tab.active {
-  color: var(--color-primary);
-  border-bottom-color: var(--color-primary);
+  color: #6366f1;
+  border-bottom-color: #6366f1;
+  background: rgba(99, 102, 241, 0.08);
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.2);
+}
+
+.login-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #6366f1 0%, #818cf8 100%);
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.6);
 }
 
 .login-error {
-  background-color: rgba(239, 68, 68, 0.1);
-  border: 1px solid var(--color-danger);
-  color: var(--color-danger);
-  padding: 12px;
-  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(220, 38, 38, 0.08) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  padding: 14px 16px;
+  border-radius: 10px;
   margin-bottom: 24px;
   font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 22px;
+  animation: formSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes formSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .form-group label {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text, #e8e9ed);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.3px;
 }
 
 .form-group input {
-  padding: 12px 16px;
-  background-color: #1e2127;
-  border: 1px solid var(--color-border, #2d3139);
-  border-radius: 8px;
-  color: var(--color-text, #e8e9ed);
+  padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(30, 33, 39, 0.6) 0%, rgba(24, 26, 32, 0.8) 100%);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: 10px;
+  color: #ffffff;
   font-size: 15px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.form-group input:hover {
+  border-color: rgba(99, 102, 241, 0.25);
 }
 
 .form-group input:focus {
-  border-color: #3d4149;
+  border-color: rgba(99, 102, 241, 0.5);
+  background: linear-gradient(135deg, rgba(30, 33, 39, 0.8) 0%, rgba(24, 26, 32, 0.95) 100%);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .form-group input::placeholder {
-  color: var(--color-text-secondary);
+  color: rgba(156, 163, 175, 0.5);
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 2fr;
-  gap: 16px;
+  gap: 18px;
 }
 
 .login-submit {
-  padding: 14px;
-  background-color: var(--color-primary, #3b82f6);
+  padding: 16px;
+  background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  transition: background-color 0.2s;
-  margin-top: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 12px;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-submit::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: buttonShimmer 3s ease-in-out infinite;
+}
+
+@keyframes buttonShimmer {
+  0% {
+    left: -100%;
+  }
+  50%, 100% {
+    left: 100%;
+  }
 }
 
 .login-submit:hover:not(:disabled) {
-  background-color: #2563eb;
+  background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.5);
+  transform: translateY(-2px);
+}
+
+.login-submit:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.login-submit:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
 }
 
 .login-submit:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
+  box-shadow: none;
+}
+
+/* ========== 초기 로딩 애니메이션 (로고 3D 등장) ========== */
+.initial-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  background: #0d0f14;
+  z-index: 9999;
+  animation: fadeOut 0.5s ease-out 4s forwards; /* 4초 후 페이드아웃 시작 (총 4.5초) */
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.initial-logo {
+  width: auto;
+  height: 160px; /* 120px → 160px (33% 증가) */
+  filter: drop-shadow(0 12px 48px rgba(99, 102, 241, 0.9)); /* 그림자도 강화 */
+  animation: logo3D 2.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes logo3D {
+  0% {
+    transform: perspective(1000px) rotateY(-90deg) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: perspective(1000px) rotateY(10deg) scale(1.1);
+  }
+  100% {
+    transform: perspective(1000px) rotateY(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+.initial-brand-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  animation: textFadeIn 1s ease-out 1.8s backwards; /* 1.8초 후 등장 (더 여유롭게) */
+}
+
+@keyframes textFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.initial-brand-name {
+  font-size: 58px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0;
+  letter-spacing: 3px;
+  text-shadow: 0 6px 28px rgba(99, 102, 241, 0.7);
+  line-height: 1;
+}
+
+.initial-tagline {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 4.5px;
+  text-transform: uppercase;
+  color: rgba(99, 102, 241, 0.9);
+  margin: 0;
+  text-shadow: 0 3px 12px rgba(99, 102, 241, 0.5);
+  line-height: 1;
+}
+
+/* ========== 카드 페이드인 ========== */
+.login-card {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.login-card.fade-in {
+  animation: cardFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cardFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========== 로그인 프로세스 오버레이 ========== */
+.login-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 15, 20, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10000;
+  animation: overlayFadeIn 0.3s ease-out;
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.login-process {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px; /* 24px → 32px (간격 증가) */
+}
+
+.process-logo {
+  width: auto;
+  height: 140px; /* 100px → 140px (40% 증가) */
+  filter: drop-shadow(0 12px 48px rgba(99, 102, 241, 0.9)); /* 그림자 더 강화 */
+  animation: logoFloat 2s ease-in-out infinite;
+}
+
+/* ========== 스피너 (Logging in...) ========== */
+.process-spinner {
+  width: 80px; /* 60px → 80px */
+  height: 80px;
+  border: 5px solid rgba(99, 102, 241, 0.2); /* 4px → 5px */
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); /* 글로우 추가 */
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ========== 체크마크 (Success) ========== */
+.process-checkmark {
+  width: 100px; /* 80px → 100px */
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px; /* 48px → 60px */
+  color: white;
+  font-weight: bold;
+  animation: checkmarkPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 12px 36px rgba(16, 185, 129, 0.6); /* 그림자 강화 */
+}
+
+@keyframes checkmarkPop {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* ========== X 마크 (Failed) ========== */
+.process-cross {
+  width: 100px; /* 80px → 100px */
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px; /* 48px → 60px */
+  color: white;
+  font-weight: bold;
+  animation: crossShake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  box-shadow: 0 12px 36px rgba(239, 68, 68, 0.6); /* 그림자 강화 */
+}
+
+@keyframes crossShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-10px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(10px);
+  }
+}
+
+/* ========== 프로세스 텍스트 ========== */
+.process-text {
+  font-size: 28px; /* 24px → 28px */
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: 1.5px; /* 1px → 1.5px */
+  animation: textPulse 1.5s ease-in-out infinite;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.5); /* 그림자 추가 */
+}
+
+.process-text.success {
+  color: #34d399;
+  animation: textFadeIn 0.5s ease-out;
+  text-shadow: 0 4px 20px rgba(52, 211, 153, 0.6); /* 초록 글로우 */
+}
+
+.process-text.failed {
+  color: #f87171;
+  animation: textFadeIn 0.5s ease-out;
+  text-shadow: 0 4px 20px rgba(248, 113, 113, 0.6); /* 빨강 글로우 */
+}
+
+@keyframes textPulse {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 

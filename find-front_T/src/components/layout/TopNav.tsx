@@ -1,7 +1,11 @@
 import { useMarketStore, type MarketFilter } from '@/store/useMarketStore'
 import { useChatStore } from '@/store/useChatStore'
-import { getMarketStatusMessage } from '@/utils/marketHours'
-import { isUSMarketOpen } from '@/utils/marketHours'
+import { 
+  isUSMarketOpen, 
+  getTimeUntilMarketClose, 
+  getTimeUntilMarketOpen, 
+  formatTimeRemaining 
+} from '@/utils/marketHours'
 import { useState, useEffect } from 'react'
 import './TopNav.css'
 
@@ -42,15 +46,29 @@ export default function TopNav() {
   useEffect(() => {
     const updateStatus = () => {
       const status = isUSMarketOpen()
-      setMarketStatusMessage(getMarketStatusMessage())
+      // 상태와 메시지를 동시에 계산하여 일관성 유지
       setIsOpen(status.isOpen)
+      
+      // getMarketStatusMessage() 내부에서 다시 isUSMarketOpen()을 호출하지 않도록
+      // 현재 상태를 기반으로 메시지 생성
+      let message = ''
+      if (status.isOpen) {
+        const msUntilClose = getTimeUntilMarketClose()
+        const timeStr = formatTimeRemaining(msUntilClose)
+        message = `장 중 · 마감 ${timeStr} 전`
+      } else {
+        const msUntilOpen = getTimeUntilMarketOpen()
+        const timeStr = formatTimeRemaining(msUntilOpen)
+        message = `장 마감 · 개장 ${timeStr} 전`
+      }
+      setMarketStatusMessage(message)
       
       // 디버깅용 로그
       if (import.meta.env.DEV) {
         console.log('[TopNav 상태 업데이트]', {
           isOpen: status.isOpen,
           message: status.message,
-          statusMessage: getMarketStatusMessage()
+          statusMessage: message
         })
       }
     }

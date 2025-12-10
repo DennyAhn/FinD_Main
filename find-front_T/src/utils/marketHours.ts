@@ -31,20 +31,21 @@ export async function syncServerTime(): Promise<void> {
     // 서버 시간과 클라이언트 시간의 차이 계산
     serverTimeOffset = estimatedServerTime - clientTimeBefore
 
-    console.log(`[시간 동기화] 서버 시간 오프셋: ${serverTimeOffset}ms`)
+    console.log(`[시간 동기화 성공] 서버 시간 오프셋: ${serverTimeOffset}ms`)
 
-    // 30분마다 자동으로 재동기화
+    // 성공 시 30분마다 자동으로 재동기화
     setTimeout(() => {
       syncServerTime().catch(console.error)
     }, 30 * 60 * 1000) // 30분
   } catch (error) {
-    console.warn('[시간 동기화 실패] 클라이언트 시간 사용:', error)
+    console.warn('[시간 동기화 실패] 클라이언트 시간 사용, 재시도 예정:', error)
     serverTimeOffset = 0
 
-    // 실패 시 5분 후 재시도
+    // 실패 시 1분 후 재시도 (서버 재시작 감지 개선)
+    // 서버가 꺼져있을 때는 더 자주 체크하여 빠르게 복구
     setTimeout(() => {
       syncServerTime().catch(console.error)
-    }, 5 * 60 * 1000) // 5분
+    }, 1 * 60 * 1000) // 1분 (기존 5분에서 개선)
   }
 }
 
@@ -171,19 +172,25 @@ export function isUSMarketOpen(): MarketStatus {
 
   const isOpen = currentMinutes >= openMinutes && currentMinutes < closeMinutes
 
-  // 디버깅용 로그
-  if (import.meta.env.DEV) {
-    const koreaTime = now.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })
-    console.log('[미국 장 상태 체크]', {
-      koreaTime,
-      easternTime: `${easternHour}:${easternMinute.toString().padStart(2, '0')} (America/New_York)`,
-      easternWeekday,
-      currentMinutes,
-      openMinutes: '9:30 AM',
-      closeMinutes: '4:00 PM',
-      isOpen
-    })
-  }
+  // 디버깅용 로그 (항상 출력하여 문제 진단)
+  const koreaTime = now.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })
+  const utcTime = now.toISOString()
+  const clientTime = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })
+  const serverTimeOffsetMs = serverTimeOffset
+  
+  console.log('[미국 장 상태 체크]', {
+    clientTime,
+    serverTimeOffset: `${serverTimeOffsetMs}ms`,
+    syncedTime: koreaTime,
+    utcTime,
+    easternTime: `${easternHour}:${easternMinute.toString().padStart(2, '0')} (America/New_York)`,
+    easternWeekday,
+    currentMinutes,
+    openMinutes: 570, // 9:30 AM
+    closeMinutes: 960, // 4:00 PM
+    isOpen,
+    reason: isOpen ? '장 중' : (easternDay === 0 || easternDay === 6 ? '주말' : '장 마감 시간')
+  })
 
   return {
     isOpen,

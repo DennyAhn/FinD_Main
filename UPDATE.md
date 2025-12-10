@@ -6,6 +6,261 @@
 
 ## 📅 최근 업데이트 (2024-12-06)
 
+### 🎨 로그인 페이지 UI/UX 대폭 개선
+
+#### 1. 로그인 프로세스 애니메이션 개선
+**파일**: `find-front_T/src/pages/Login/Login.tsx`, `find-front_T/src/pages/Login/Login.css`
+
+**개선사항**:
+- "Logging in..." 화면 최소 3초 보장 로직 확인 및 검증
+- "Login Successful!" 메시지가 제대로 표시된 후 리다이렉트되도록 수정
+- `useEffect`에서 로그인 프로세스 중 리다이렉트 방지 로직 추가
+- 초기 로딩 애니메이션 시간 0.5초 단축 (5초 → 4.5초)
+
+**주요 코드**:
+```typescript
+// 로그인 프로세스 중에는 리다이렉트하지 않도록 수정
+useEffect(() => {
+  if (isAuthenticated && loginStatus === 'idle') {
+    console.log('✅ Already authenticated, redirecting to dashboard')
+    window.location.href = '/'
+  }
+}, [isAuthenticated, loginStatus])
+
+// 성공 화면 표시를 위해 2초 대기 후 리다이렉트
+setLoginStatus('success')
+await new Promise(resolve => setTimeout(resolve, 2000))
+window.location.href = '/'
+```
+
+**타임라인**:
+- 0~3초: "Logging in..." 표시 (최소 3초 보장)
+- 3~5초: "Login Successful!" 표시 (2초간)
+- 5초: 대시보드로 이동
+
+#### 2. 브랜딩 및 서브타이틀 개선
+**파일**: `find-front_T/src/pages/Login/Login.tsx`, `find-front_T/src/pages/Login/Login.css`
+
+**변경사항**:
+- 서브타이틀 변경: "금융 데이터 분석 플랫폼" → **"Data to Insight, 가치를 찾다"**
+- Fin:D 로고 크기 조정 (32px → 36px)
+- FINANCIAL INTELLIGENCE 태그라인 크기 및 간격 조정
+- 서브타이틀에 보라색 그라데이션 효과 적용
+- 서브타이틀 크기 조정 (15px → 16px)
+
+**스타일 개선**:
+```css
+.login-subtitle {
+  background: linear-gradient(90deg, 
+    rgba(167, 139, 250, 0.95) 0%, 
+    rgba(99, 102, 241, 0.95) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 16px;
+  font-weight: 600;
+  animation: subtitleShimmer 3s ease-in-out infinite;
+}
+```
+
+#### 3. 동적 효과 추가
+**파일**: `find-front_T/src/pages/Login/Login.css`
+
+**추가된 효과**:
+- **서브타이틀 Shimmer 효과**: 그라데이션이 좌우로 부드럽게 움직이는 프리미엄 효과
+- **로그인 버튼 Shimmer 효과**: 계속해서 빛이 지나가는 효과로 클릭 유도
+- **탭 전환 슬라이드 애니메이션**: 로그인/회원가입 탭 전환 시 부드러운 슬라이드 효과
+
+**애니메이션 코드**:
+```css
+@keyframes subtitleShimmer {
+  0% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+  100% { background-position: 0% center; }
+}
+
+@keyframes buttonShimmer {
+  0% { left: -100%; }
+  50%, 100% { left: 100%; }
+}
+
+@keyframes formSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+```
+
+#### 4. 파비콘 및 페이지 타이틀 업데이트
+**파일**: `find-front_T/index.html`
+
+**변경사항**:
+- 파비콘을 Fin:D 로고로 변경 (`/vite.svg` → `/favicon.svg`)
+- 페이지 타이틀 변경: "FIN:D - 금융 데이터 분석" → **"Fin:D - Financial Intelligence"**
+- SEO를 위한 메타 설명 추가
+
+---
+
+### 🎯 기업 디테일 페이지 개선
+
+#### 1. 탭 전환 슬라이드 애니메이션 추가
+**파일**: `find-front_T/src/pages/Company/CompanyDetail.tsx`, `find-front_T/src/pages/Company/CompanyDetail.css`
+
+**개선사항**:
+- 개요/차트/재무제표/뉴스/투자의견 탭 전환 시 부드러운 슬라이드 애니메이션
+- 각 탭 컨텐츠에 고유 `key` prop 추가로 React가 전환을 인식
+- 로그인 페이지와 동일한 스타일로 일관성 유지
+
+**애니메이션**:
+```css
+.tab-content-wrapper {
+  animation: tabSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes tabSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+```
+
+#### 2. 탭 초기화 로직 추가
+**파일**: `find-front_T/src/pages/Company/CompanyDetail.tsx`
+
+**개선사항**:
+- 기업 디테일 페이지 진입 시 항상 '개요' 탭이 기본으로 표시되도록 수정
+- ticker 변경 시 `activeTab`을 'overview'로 자동 리셋
+
+**코드**:
+```typescript
+// ticker가 변경될 때마다 항상 'overview' 탭으로 리셋
+useEffect(() => {
+  setActiveTab('overview')
+}, [ticker])
+```
+
+---
+
+### 📊 재무제표 컴포넌트 개선
+
+#### 1. 탭 전환 슬라이드 애니메이션 추가
+**파일**: `find-front_T/src/components/widgets/FinancialStatementsView.tsx`, `find-front_T/src/components/widgets/Widgets.css`
+
+**개선사항**:
+- 손익계산서/재무상태표/현금흐름표 탭 전환 시 슬라이드 애니메이션
+- 연간/분기 전환 시에도 부드러운 애니메이션
+- 연도 범위 변경 시에도 애니메이션 적용
+
+**구현**:
+- 각 탭 컨텐츠에 `key` prop 추가 (`${activeSubTab}-${period}-${yearRange}`)
+- 기업 디테일 페이지와 동일한 애니메이션 스타일 적용
+
+---
+
+### 🔧 백엔드 안정성 개선
+
+#### 1. Balance Sheet 서비스 중복 키 에러 처리 개선
+**파일**: `find-backend_T/app/services/balance_sheet_service.py`
+
+**문제**:
+- Race condition 발생 시 중복 키 에러로 전체 트랜잭션 롤백
+- 동시 요청 시 데이터 손실 발생
+- 세션 롤백 후 계속 사용하려고 시도하여 추가 에러 발생
+
+**해결**:
+- 각 항목을 개별적으로 처리하여 중복 키 에러 방지
+- 중복 키 에러 발생 시 자동으로 기존 레코드를 재조회하여 업데이트
+- 일부 항목 실패해도 나머지 항목은 정상 처리되도록 개선
+
+**주요 코드**:
+```python
+# 각 항목을 개별적으로 처리하여 중복 키 에러 방지
+try:
+    if existing:
+        # 기존 레코드 업데이트
+        existing.total_assets = total_assets_val
+        # ... 필드 업데이트
+    else:
+        # 새 레코드 추가
+        record = models.CompanyBalanceSheet(...)
+        db.add(record)
+    
+    # 각 항목마다 즉시 커밋 (중복 에러 발생 시 해당 항목만 롤백)
+    db.commit()
+except Exception as item_error:
+    db.rollback()
+    # 중복 키 에러인 경우 기존 레코드를 다시 조회하여 업데이트
+    if "Duplicate entry" in str(item_error):
+        existing_retry = db.query(...).first()
+        if existing_retry:
+            # 기존 레코드 업데이트
+            existing_retry.total_assets = total_assets_val
+            # ... 필드 업데이트
+            db.commit()
+```
+
+**개선 효과**:
+- ✅ 중복 키 에러 자동 복구
+- ✅ Race condition 안전 처리
+- ✅ 부분 실패 허용 (일부 항목 실패해도 나머지 계속 처리)
+- ✅ 데이터 정확성 유지 (기존 로직과 동일한 데이터 처리)
+
+#### 2. Key Metrics 서비스 세션 롤백 문제 해결
+**파일**: `find-backend_T/app/services/key_metrics_service.py`
+
+**문제**:
+- `fetch_company_balance_sheets` 호출 후 불필요한 `db.commit()` 호출
+- 에러 발생 시 세션 롤백 처리 부족
+
+**해결**:
+- `fetch_company_balance_sheets` 내부에서 이미 커밋하므로 외부 커밋 제거
+- 에러 발생 시 `db.rollback()` 추가로 세션 정리
+
+**코드**:
+```python
+# Before
+await fetch_company_balance_sheets(ticker, db, client, normalized_period, limit=5)
+db.commit()  # 불필요한 커밋
+
+# After
+await fetch_company_balance_sheets(ticker, db, client, normalized_period, limit=5)
+# fetch_company_balance_sheets 내부에서 이미 commit하므로 여기서는 commit 불필요
+
+except Exception as fetch_error:
+    print(f"[D/E] Failed to fetch Balance Sheet: {fetch_error}")
+    db.rollback()  # 에러 발생 시 세션 롤백
+```
+
+#### 3. React Router Future Flag 추가
+**파일**: `find-front_T/src/App.tsx`
+
+**변경사항**:
+- React Router v7 업그레이드 준비를 위한 `v7_startTransition` 플래그 추가
+- 네비게이션 상태 업데이트를 `React.startTransition`으로 감싸 더 부드러운 페이지 전환
+
+**코드**:
+```typescript
+<BrowserRouter
+  future={{
+    v7_startTransition: true,
+  }}
+>
+```
+
+---
+
+## 📅 최근 업데이트 (2024-12-06) - 이전
+
 ### 🔐 인증 시스템 개선 (세션 기반 인증)
 
 #### 1. 로그인 Race Condition 수정
@@ -313,5 +568,5 @@ const cardVariants = {
 
 ---
 
-**마지막 업데이트**: 2024년
+**마지막 업데이트**: 2024-12-06
 

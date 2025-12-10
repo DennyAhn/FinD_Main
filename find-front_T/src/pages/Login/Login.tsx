@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { AxiosError } from 'axios'
 import { authApi } from '@/services/api/auth'
 import { useAuthStore } from '@/store/useAuthStore'
+import FindLogo from '@/assets/icons/find logo2 1.svg'
 import './Login.css'
 
 interface ErrorResponse {
@@ -13,14 +14,29 @@ export default function Login() {
   const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  
+  // 초기 로딩 애니메이션
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
+  
+  // 로그인 프로세스 상태
+  const [loginStatus, setLoginStatus] = useState<'idle' | 'logging' | 'success' | 'failed'>('idle')
 
-  // 이미 로그인된 사용자는 대시보드로 리다이렉트
+  // 초기 로딩 애니메이션
   useEffect(() => {
-    if (isAuthenticated) {
+    const timer = setTimeout(() => {
+      setIsInitialLoading(false)
+    }, 4500) // 4.5초 후 카드 표시
+    
+    return () => clearTimeout(timer)
+  }, [])
+
+  // 이미 로그인된 사용자는 대시보드로 리다이렉트 (로그인 프로세스 중이 아닐 때만)
+  useEffect(() => {
+    if (isAuthenticated && loginStatus === 'idle') {
       console.log('✅ Already authenticated, redirecting to dashboard')
       window.location.href = '/'
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, loginStatus])
 
   // 로그인 폼
   const [loginForm, setLoginForm] = useState({
@@ -41,6 +57,9 @@ export default function Login() {
     e.preventDefault()
     setError(null)
     setLoading(true)
+    setLoginStatus('logging') // "Logging in..." 표시
+
+    const startTime = Date.now() // 시작 시간 기록
 
     try {
       const response = await authApi.login({
@@ -59,11 +78,23 @@ export default function Login() {
       login(response.access_token)
       console.log('✅ Token saved, redirecting...')
 
-      // 상태 업데이트를 위한 짧은 지연 후 리다이렉트
-      // Zustand store 업데이트가 완료되도록 보장
-      setTimeout(() => {
-        window.location.href = '/'
-      }, 100)
+      // [최소 3초 보장] API가 빨리 끝나도 3초는 "Logging in..." 표시
+      const elapsed = Date.now() - startTime
+      const minDuration = 3000 // 최소 3초
+      const remaining = Math.max(0, minDuration - elapsed)
+
+      await new Promise(resolve => setTimeout(resolve, remaining))
+
+      // 성공 애니메이션 표시
+      setLoginStatus('success')
+      
+      // React 렌더링 완료를 위한 짧은 지연 + 성공 화면 표시 (총 2초)
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
+      // 성공 화면을 2초간 표시 후 리다이렉트
+      await new Promise(resolve => setTimeout(resolve, 1900))
+      
+      window.location.href = '/'
     } catch (error) {
       const err = error as AxiosError<ErrorResponse>
       console.error('❌ Login error:', err)
@@ -71,8 +102,23 @@ export default function Login() {
         err.response?.data?.detail ||
         err.message ||
         '로그인에 실패했습니다. 서버 연결을 확인해주세요.'
+      
+      // [최소 3초 보장] 실패 시에도 3초는 "Logging in..." 표시
+      const elapsed = Date.now() - startTime
+      const minDuration = 3000
+      const remaining = Math.max(0, minDuration - elapsed)
+
+      await new Promise(resolve => setTimeout(resolve, remaining))
+      
+      // 실패 애니메이션 표시
+      setLoginStatus('failed')
       setError(errorMessage)
-      setLoading(false)
+      
+      // 2초 후 상태 초기화
+      setTimeout(() => {
+        setLoginStatus('idle')
+        setLoading(false)
+      }, 2000)
     }
   }
 
@@ -106,10 +152,54 @@ export default function Login() {
 
   return (
     <div className="login-container">
-      <div className="login-card">
+      {/* 초기 로딩 애니메이션 (로고 3D 등장) */}
+      {isInitialLoading && (
+        <div className="initial-loading">
+          <img src={FindLogo} alt="Fin:D" className="initial-logo" />
+          <div className="initial-brand-text">
+            <h1 className="initial-brand-name">Fin:D</h1>
+            <p className="initial-tagline">Financial Intelligence</p>
+          </div>
+        </div>
+      )}
+
+      {/* 로그인 프로세스 오버레이 */}
+      {loginStatus !== 'idle' && (
+        <div className={`login-overlay ${loginStatus}`}>
+          <div className="login-process">
+            <img src={FindLogo} alt="Fin:D" className="process-logo" />
+            {loginStatus === 'logging' && (
+              <>
+                <div className="process-spinner"></div>
+                <p className="process-text">Logging in...</p>
+              </>
+            )}
+            {loginStatus === 'success' && (
+              <>
+                <div className="process-checkmark">✓</div>
+                <p className="process-text success">Login Successful!</p>
+              </>
+            )}
+            {loginStatus === 'failed' && (
+              <>
+                <div className="process-cross">✕</div>
+                <p className="process-text failed">Login Failed</p>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className={`login-card ${!isInitialLoading ? 'fade-in' : ''}`}>
         <div className="login-header">
-          <h1 className="login-logo">Fin:D</h1>
-          <p className="login-subtitle">금융 데이터 분석 플랫폼</p>
+          <div className="login-brand">
+            <img src={FindLogo} alt="Fin:D Logo" className="login-logo-image" />
+            <div className="login-brand-text">
+              <h1 className="login-logo">Fin:D</h1>
+              <p className="login-tagline">Financial Intelligence</p>
+            </div>
+          </div>
+          <p className="login-subtitle">Data to Insight, 가치를 찾다</p>
         </div>
 
         <div className="login-tabs">
@@ -136,7 +226,7 @@ export default function Login() {
         {error && <div className="login-error">{error}</div>}
 
         {isLogin ? (
-          <form onSubmit={handleLogin} className="login-form">
+          <form key="login-form" onSubmit={handleLogin} className="login-form">
             <div className="form-group">
               <label htmlFor="username">ID</label>
               <input
@@ -170,7 +260,7 @@ export default function Login() {
             </button>
           </form>
         ) : (
-          <form onSubmit={handleRegister} className="login-form">
+          <form key="register-form" onSubmit={handleRegister} className="login-form">
             <div className="form-group">
               <label htmlFor="reg-username">ID</label>
               <input
